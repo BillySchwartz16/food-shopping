@@ -464,16 +464,29 @@
       const mealDiv = button.closest('.meal');
       const currentMealId = parseInt(mealDiv.dataset.mealId);
       
-      // Get a random recipe that's different from the current one
-      let newRecipeId;
-      do {
-        newRecipeId = Math.floor(Math.random() * recipes.length);
-      } while (newRecipeId === currentMealId);
+      // Get all currently displayed recipe IDs
+      const currentRecipeIds = Array.from(document.querySelectorAll('.meal')).map(meal => 
+        parseInt(meal.dataset.mealId)
+      );
       
-      const newRecipe = recipes[newRecipeId];
+      // Find available recipes that aren't currently displayed
+      const availableRecipes = recipes.filter(recipe => 
+        !currentRecipeIds.includes(recipe.id) || recipe.id === currentMealId
+      );
+      
+      // If we only have the current recipe available, don't swap
+      if (availableRecipes.length <= 1) {
+        alert('No other recipes available to swap!');
+        return;
+      }
+      
+      // Get a random recipe from available ones (excluding current)
+      const availableIds = availableRecipes.filter(recipe => recipe.id !== currentMealId);
+      const randomIndex = Math.floor(Math.random() * availableIds.length);
+      const newRecipe = availableIds[randomIndex];
       
       // Update the meal div with new recipe
-      mealDiv.dataset.mealId = newRecipeId;
+      mealDiv.dataset.mealId = newRecipe.id;
       updateRecipe(mealDiv, newRecipe);
       updateShoppingList();
     }
@@ -547,16 +560,19 @@
 
     function updateShoppingList() {
       const groceryList = document.getElementById('grocery-list');
-      const allIngredients = new Set();
+      const ingredientCounts = new Map();
       
-      // Get all current recipes and extract ingredients
+      // Get all current recipes and count ingredients
       const meals = document.querySelectorAll('.meal');
       meals.forEach(meal => {
         const mealId = parseInt(meal.dataset.mealId);
         const recipe = recipes[mealId];
         if (recipe && recipe.ingredients) {
           recipe.ingredients.forEach(ingredient => {
-            allIngredients.add(ingredient);
+            // Normalize ingredient name (remove quantities for grouping)
+            const normalizedIngredient = normalizeIngredientName(ingredient);
+            const count = ingredientCounts.get(normalizedIngredient) || 0;
+            ingredientCounts.set(normalizedIngredient, count + 1);
           });
         }
       });
@@ -565,13 +581,27 @@
       const existingItems = groceryList.querySelectorAll('.grocery-item');
       existingItems.forEach(item => item.remove());
       
-      // Add all ingredients to grocery list
-      Array.from(allIngredients).sort().forEach(ingredient => {
-        const div = document.createElement('div');
-        div.className = 'grocery-item';
-        div.innerHTML = `<input type="checkbox"><label>${ingredient}</label><button class="remove-btn" onclick="removeItem(this)">✕</button>`;
-        groceryList.appendChild(div);
-      });
+      // Add all ingredients to grocery list with counts
+      Array.from(ingredientCounts.entries())
+        .sort(([a], [b]) => a.localeCompare(b))
+        .forEach(([ingredient, count]) => {
+          const div = document.createElement('div');
+          div.className = 'grocery-item';
+          const displayName = count > 1 ? `${ingredient} (${count})` : ingredient;
+          div.innerHTML = `<input type="checkbox"><label>${displayName}</label><button class="remove-btn" onclick="removeItem(this)">✕</button>`;
+          groceryList.appendChild(div);
+        });
+    }
+
+    function normalizeIngredientName(ingredient) {
+      // Remove common quantity indicators and normalize for grouping
+      return ingredient
+        .replace(/^\d+(\.\d+)?\s*(cups?|tbsp|tsp|oz|lbs?|cans?|large|medium|small|boneless|skinless)\s*/i, '')
+        .replace(/^\d+\s*/, '') // Remove leading numbers
+        .replace(/\s*\([^)]*\)/, '') // Remove parenthetical info
+        .replace(/,.*$/, '') // Remove everything after comma
+        .trim()
+        .toLowerCase();
     }
 
     // Load recipes when page loads
