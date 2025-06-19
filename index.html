@@ -159,6 +159,38 @@
       transform: none;
       box-shadow: none;
     }
+    
+    .recipe-swap-dropdown {
+      padding: 0.6rem 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #ffffff, #f8fafc);
+      font-size: 0.9rem;
+      cursor: pointer;
+      min-width: 180px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      color: #4a5568;
+      font-weight: 500;
+    }
+    
+    .recipe-swap-dropdown:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+      transform: translateY(-1px);
+    }
+    
+    .recipe-swap-dropdown:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .recipe-swap-dropdown option {
+      padding: 0.5rem;
+      background: white;
+      color: #4a5568;
+    }
     .loading {
       opacity: 0.6;
       pointer-events: none;
@@ -370,6 +402,23 @@
       
       .swap-btn {
         margin-top: 0.5rem;
+      }
+      
+      .meal .recipe-swap-dropdown {
+        width: 100% !important;
+        min-width: auto !important;
+        margin-top: 0.5rem;
+        font-size: 1rem !important;
+        padding: 0.8rem !important;
+      }
+      
+      .meal h2 {
+        margin-bottom: 0.5rem !important;
+      }
+      
+      .meal > div:first-child {
+        flex-direction: column !important;
+        align-items: stretch !important;
       }
       
       input[type="text"], input[type="password"] {
@@ -796,9 +845,9 @@
         mealDiv.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
             <h2 style="margin: 0; flex: 1;">${recipe.title}</h2>
-            <select onchange="swapToSpecificRecipe(this)" style="padding: 0.4rem 0.8rem; border: 2px solid #e2e8f0; border-radius: 8px; background: white; font-size: 0.9rem; cursor: pointer; min-width: 150px;">
+            <select onchange="swapToSpecificRecipe(this)" class="recipe-swap-dropdown">
               <option value="">Swap to...</option>
-              ${recipes.map(r => r.id !== recipe.id ? `<option value="${r.id}">${r.title}</option>` : '').join('')}
+              ${getAvailableRecipesForDropdown(recipe.id).map(r => `<option value="${r.id}">${r.title}</option>`).join('')}
             </select>
           </div>
           <button class="toggle-btn" onclick="toggleInstructions(this)">View Instructions</button>
