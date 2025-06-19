@@ -499,8 +499,15 @@
 
   <script>
     function toggleInstructions(button) {
-      const div = button.nextElementSibling;
-      div.style.display = div.style.display === "block" ? "none" : "block";
+      const mealDiv = button.closest('.meal');
+      const instructionsDiv = mealDiv.querySelector('.instructions');
+      if (instructionsDiv.style.display === "block") {
+        instructionsDiv.style.display = "none";
+        button.textContent = "View Instructions";
+      } else {
+        instructionsDiv.style.display = "block";
+        button.textContent = "Hide Instructions";
+      }
     }
   
     function addItem() {
