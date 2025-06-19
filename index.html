@@ -969,19 +969,18 @@
       
       // Find available recipes that aren't currently displayed
       const availableRecipes = recipes.filter(recipe => 
-        !currentlyDisplayedRecipes.includes(recipe.id) || recipe.id === currentMealId
+        recipe.id !== currentMealId && !currentlyDisplayedRecipes.includes(recipe.id)
       );
       
-      // If we only have the current recipe available, don't swap
-      if (availableRecipes.length <= 1) {
+      // If no recipes available, don't swap
+      if (availableRecipes.length === 0) {
         alert('No other recipes available to swap!');
         return;
       }
       
-      // Get a random recipe from available ones (excluding current)
-      const availableIds = availableRecipes.filter(recipe => recipe.id !== currentMealId);
-      const randomIndex = Math.floor(Math.random() * availableIds.length);
-      const newRecipe = availableIds[randomIndex];
+      // Get a random recipe from available ones
+      const randomIndex = Math.floor(Math.random() * availableRecipes.length);
+      const newRecipe = availableRecipes[randomIndex];
       
       // Update the currently displayed recipes array
       const currentIndex = currentlyDisplayedRecipes.indexOf(currentMealId);
@@ -992,6 +991,10 @@
       // Update the meal div with new recipe
       mealDiv.dataset.mealId = newRecipe.id;
       updateRecipe(mealDiv, newRecipe);
+      
+      // Update all dropdowns to reflect the new state
+      updateAllDropdowns();
+      
       updateShoppingList();
       saveState();
     }
@@ -1345,8 +1348,8 @@
 
     function getAvailableRecipesForDropdown(currentRecipeId) {
       return recipes.filter(recipe => 
-        !currentlyDisplayedRecipes.includes(recipe.id) || recipe.id === currentRecipeId
-      ).filter(recipe => recipe.id !== currentRecipeId);
+        recipe.id !== currentRecipeId && !currentlyDisplayedRecipes.includes(recipe.id)
+      );
     }
 
     function searchYouTube(searchQuery) {
@@ -1374,6 +1377,9 @@
       mealDiv.dataset.mealId = newRecipe.id;
       updateRecipe(mealDiv, newRecipe);
       
+      // Reset the dropdown to default state
+      selectElement.value = "";
+      
       // Update ALL dropdowns to reflect the new state
       updateAllDropdowns();
       
@@ -1382,17 +1388,23 @@
     }
 
     function updateAllDropdowns() {
-      const dropdowns = document.querySelectorAll('.form-select');
+      const dropdowns = document.querySelectorAll('select[onchange="swapToSpecificRecipe(this)"]');
       dropdowns.forEach(dropdown => {
         const mealDiv = dropdown.closest('[data-meal-id]');
         if (!mealDiv) return;
         const currentRecipeId = parseInt(mealDiv.dataset.mealId);
         const availableRecipes = getAvailableRecipesForDropdown(currentRecipeId);
         
+        // Store current selection to preserve it if it's still valid
+        const currentSelection = dropdown.value;
+        
         dropdown.innerHTML = `
           <option value="">Swap to...</option>
           ${availableRecipes.map(r => `<option value="${r.id}">${r.title}</option>`).join('')}
         `;
+        
+        // Reset to default after updating options
+        dropdown.value = "";
       });
     }
 
