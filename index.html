@@ -383,79 +383,9 @@
     <h1>💚 Heart-Healthy Dinners</h1>
     <p style="text-align: center; color: #718096; font-size: 1.1rem; margin-bottom: 2rem;">Delicious, nutritious meals without fish or onions</p>
 
-    <div id="api-config" class="api-config">
-    <h3>Claude API Configuration</h3>
-    <input type="password" id="claude-api-key" placeholder="Enter your Claude API key..." style="width: 70%; margin-right: 0.5rem;">
-    <button onclick="saveApiKey()">Save Key</button>
-    <p style="font-size: 0.9em; color: #666; margin-top: 0.5rem;">Your API key is stored locally and never sent to our servers.</p>
-  </div>
 
-  <div class="meal" data-meal-id="0">
-    <h2>Grilled Lemon Herb Chicken</h2>
-    <button class="toggle-btn" onclick="toggleInstructions(this)">View Instructions</button>
-    <button class="swap-btn" onclick="swapRecipe(this)" style="margin-left: 1rem; background-color: #e67e22;">Swap Recipe</button>
-    <div class="instructions">
-      <ol>
-        <li>Marinate chicken with lemon juice, garlic, herbs, olive oil, salt and pepper for 30 minutes.</li>
-        <li>Grill on medium-high heat for 6–7 minutes per side until cooked through.</li>
-        <li>Cook quinoa in low-sodium broth as per package instructions.</li>
-        <li>Steam broccoli and toss with lemon zest and olive oil before serving.</li>
-      </ol>
-    </div>
-  </div>
-
-  <div class="meal" data-meal-id="1">
-    <h2>Stuffed Bell Peppers with Turkey</h2>
-    <button class="toggle-btn" onclick="toggleInstructions(this)">View Instructions</button>
-    <button class="swap-btn" onclick="swapRecipe(this)" style="margin-left: 1rem; background-color: #e67e22;">Swap Recipe</button>
-    <div class="instructions">
-      <ol>
-        <li>Preheat oven to 375°F (190°C).</li>
-        <li>Sauté turkey with garlic and tomatoes, mix with cooked brown rice.</li>
-        <li>Stuff mixture into halved bell peppers, top with a bit of cheese.</li>
-        <li>Bake for 25–30 minutes until peppers are tender.</li>
-      </ol>
-    </div>
-  </div>
-
-  <div class="meal" data-meal-id="2">
-    <h2>Lentil and Sweet Potato Stew</h2>
-    <button class="toggle-btn" onclick="toggleInstructions(this)">View Instructions</button>
-    <button class="swap-btn" onclick="swapRecipe(this)" style="margin-left: 1rem; background-color: #e67e22;">Swap Recipe</button>
-    <div class="instructions">
-      <ol>
-        <li>Sauté diced celery and carrots for 5 minutes.</li>
-        <li>Add sweet potatoes, lentils, and seasonings. Cover with water or broth.</li>
-        <li>Simmer for 25–30 minutes until lentils are soft.</li>
-        <li>Serve with whole grain bread.</li>
-      </ol>
-    </div>
-  </div>
-
-  <div class="meal" data-meal-id="3">
-    <h2>Whole Wheat Pasta with Vegetables</h2>
-    <button class="toggle-btn" onclick="toggleInstructions(this)">View Instructions</button>
-    <button class="swap-btn" onclick="swapRecipe(this)" style="margin-left: 1rem; background-color: #e67e22;">Swap Recipe</button>
-    <div class="instructions">
-      <ol>
-        <li>Cook whole wheat pasta as directed.</li>
-        <li>Sauté mushrooms, spinach, garlic, and tomatoes in olive oil.</li>
-        <li>Combine with drained pasta and sprinkle with fresh basil.</li>
-      </ol>
-    </div>
-  </div>
-
-  <div class="meal" data-meal-id="4">
-    <h2>Chickpea & Avocado Tacos</h2>
-    <button class="toggle-btn" onclick="toggleInstructions(this)">View Instructions</button>
-    <button class="swap-btn" onclick="swapRecipe(this)" style="margin-left: 1rem; background-color: #e67e22;">Swap Recipe</button>
-    <div class="instructions">
-      <ol>
-        <li>Mash chickpeas with avocado, cumin, lime juice, salt and pepper.</li>
-        <li>Prepare cabbage slaw with shredded cabbage, carrots, lime juice.</li>
-        <li>Fill whole grain tortillas with chickpea mix and slaw.</li>
-      </ol>
-    </div>
+  <div id="meals-container">
+    <!-- Meals will be loaded here by JavaScript -->
   </div>
 
   <h2>🛒 Grocery List</h2>
@@ -497,6 +427,7 @@
 
   </div>
 
+  <script src="recipes.js"></script>
   <script>
     function toggleInstructions(button) {
       const mealDiv = button.closest('.meal');
@@ -529,237 +460,125 @@
       setTimeout(() => item.remove(), 300);
     }
 
-    // Claude API integration
-    let claudeApiKey = localStorage.getItem('claude-api-key');
-
-    function saveApiKey() {
-      const keyInput = document.getElementById('claude-api-key');
-      claudeApiKey = keyInput.value.trim();
-      if (claudeApiKey) {
-        localStorage.setItem('claude-api-key', claudeApiKey);
-        keyInput.value = '';
-        alert('API key saved successfully!');
-      }
-    }
-
-    // Load saved API key on page load
-    window.addEventListener('load', () => {
-      if (claudeApiKey) {
-        document.getElementById('api-config').style.display = 'none';
-      } else {
-        document.getElementById('api-config').style.display = 'block';
-      }
-    });
-
-    async function swapRecipe(button) {
-      if (!claudeApiKey) {
-        alert('Please configure your Claude API key first.');
-        document.getElementById('api-config').style.display = 'block';
-        return;
-      }
-
+    function swapRecipe(button) {
       const mealDiv = button.closest('.meal');
-      const mealId = mealDiv.dataset.mealId;
-      const currentTitle = mealDiv.querySelector('h2').textContent;
+      const currentMealId = parseInt(mealDiv.dataset.mealId);
       
-      // Disable button and show loading state
-      button.disabled = true;
-      button.textContent = 'Generating...';
-      mealDiv.classList.add('loading');
-
-      try {
-        const newRecipe = await callClaudeAPI(currentTitle);
-        updateRecipe(mealDiv, newRecipe);
-        updateShoppingList();
-      } catch (error) {
-        console.error('Error swapping recipe:', error);
-        let errorMessage = 'Failed to generate new recipe. ';
-        
-        if (error.message.includes('401')) {
-          errorMessage += 'Please check your API key.';
-        } else if (error.message.includes('429')) {
-          errorMessage += 'Rate limit exceeded. Please try again later.';
-        } else if (error.message.includes('API call failed')) {
-          errorMessage += 'API error: ' + error.message;
-        } else {
-          errorMessage += 'Please try again.';
-        }
-        
-        alert(errorMessage);
-      } finally {
-        // Re-enable button
-        button.disabled = false;
-        button.textContent = 'Swap Recipe';
-        mealDiv.classList.remove('loading');
-      }
-    }
-
-    async function callClaudeAPI(currentRecipe) {
-      const prompt = `Please provide a heart-healthy dinner recipe that replaces "${currentRecipe}". This recipe is specifically for someone managing LDL cholesterol levels.
-
-      REQUIREMENTS:
-      - Heart-healthy and specifically good for lowering LDL cholesterol
-      - NO fish or seafood of any kind
-      - NO onions (including green onions, shallots, leeks)
-      - Focus on ingredients that help reduce LDL: oats, beans, nuts, olive oil, vegetables, lean proteins
-      - Include fiber-rich ingredients
-      - Use herbs and spices for flavor instead of onions
-      - Cooking methods should be heart-healthy (grilling, baking, steaming, sautéing with minimal oil)
-
-      FORMAT REQUIREMENTS:
-      - Catchy, appetizing recipe title
-      - 6-8 detailed step-by-step cooking instructions
-      - Complete ingredients list with quantities
-      - Prep time and cook time
-      - Servings
-      - Brief note on why it's heart-healthy
-      - If possible, suggest a YouTube search term that would help find a similar recipe video
-
-      IMPORTANT: Respond with ONLY valid JSON, no other text. Format:
-      {
-        "title": "Recipe Name",
-        "prepTime": "X minutes",
-        "cookTime": "X minutes", 
-        "servings": "X servings",
-        "healthNote": "Brief explanation of heart-healthy benefits",
-        "instructions": ["Detailed step 1 with specific temperatures/times", "Detailed step 2", ...],
-        "ingredients": ["1 cup ingredient 1", "2 tbsp ingredient 2", ...],
-        "youtubeSearch": "suggested search term for finding recipe videos"
-      }`;
-
-      try {
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': claudeApiKey,
-            'anthropic-version': '2023-06-01'
-          },
-          body: JSON.stringify({
-            model: 'claude-3-sonnet-20240229',
-            max_tokens: 1500,
-            messages: [{
-              role: 'user',
-              content: prompt
-            }]
-          })
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('API Error Response:', errorText);
-          throw new Error(`API call failed: ${response.status} - ${errorText}`);
-        }
-
-        const data = await response.json();
-        console.log('API Response:', data);
-        
-        if (!data.content || !data.content[0] || !data.content[0].text) {
-          throw new Error('Invalid API response structure');
-        }
-        
-        const content = data.content[0].text.trim();
-        console.log('Raw content:', content);
-        
-        // Try to extract JSON from the response
-        let jsonMatch = content.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) {
-          // If no JSON found, try parsing the entire content
-          jsonMatch = [content];
-        }
-        
-        const recipeData = JSON.parse(jsonMatch[0]);
-        
-        // Validate required fields
-        if (!recipeData.title || !recipeData.instructions) {
-          throw new Error('Recipe data missing required fields');
-        }
-        
-        return recipeData;
-        
-      } catch (error) {
-        console.error('Detailed error:', error);
-        throw error;
-      }
+      // Get a random recipe that's different from the current one
+      let newRecipeId;
+      do {
+        newRecipeId = Math.floor(Math.random() * recipes.length);
+      } while (newRecipeId === currentMealId);
+      
+      const newRecipe = recipes[newRecipeId];
+      
+      // Update the meal div with new recipe
+      mealDiv.dataset.mealId = newRecipeId;
+      updateRecipe(mealDiv, newRecipe);
+      updateShoppingList();
     }
 
     function updateRecipe(mealDiv, recipe) {
       // Update title
       mealDiv.querySelector('h2').textContent = recipe.title;
       
-      // Update instructions div with more detailed content
+      // Update instructions div with detailed content
       const instructionsDiv = mealDiv.querySelector('.instructions');
       instructionsDiv.innerHTML = `
         <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
           <div style="display: flex; gap: 1rem; font-size: 0.9rem; color: #666;">
-            <span>⏱️ Prep: ${recipe.prepTime || 'N/A'}</span>
-            <span>🍳 Cook: ${recipe.cookTime || 'N/A'}</span>
-            <span>🍽️ Serves: ${recipe.servings || 'N/A'}</span>
+            <span>⏱️ Prep: ${recipe.prepTime}</span>
+            <span>🍳 Cook: ${recipe.cookTime}</span>
+            <span>🍽️ Serves: ${recipe.servings}</span>
           </div>
-          ${recipe.healthNote ? `<div style="background: #e6fffa; padding: 0.8rem; border-radius: 8px; font-size: 0.9rem; color: #2d5a4a;"><strong>💚 Heart-Healthy:</strong> ${recipe.healthNote}</div>` : ''}
+          <div style="background: #e6fffa; padding: 0.8rem; border-radius: 8px; font-size: 0.9rem; color: #2d5a4a;">
+            <strong>💚 Heart-Healthy:</strong> ${recipe.healthNote}
+          </div>
         </div>
         
         <div style="display: grid; gap: 1rem; grid-template-columns: 1fr 1fr;">
           <div>
             <h4 style="margin: 0 0 0.5rem 0; color: #4a5568;">Ingredients:</h4>
             <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.9rem;">
-              ${recipe.ingredients ? recipe.ingredients.map(ing => `<li style="margin-bottom: 0.3rem;">${ing}</li>`).join('') : '<li>Ingredients not available</li>'}
+              ${recipe.ingredients.map(ing => `<li style="margin-bottom: 0.3rem;">${ing}</li>`).join('')}
             </ul>
           </div>
           
           <div>
             <h4 style="margin: 0 0 0.5rem 0; color: #4a5568;">Instructions:</h4>
             <ol style="margin: 0; padding-left: 1.2rem; font-size: 0.9rem;">
-              ${recipe.instructions ? recipe.instructions.map(inst => `<li style="margin-bottom: 0.5rem; line-height: 1.4;">${inst}</li>`).join('') : '<li>Instructions not available</li>'}
+              ${recipe.instructions.map(inst => `<li style="margin-bottom: 0.5rem; line-height: 1.4;">${inst}</li>`).join('')}
             </ol>
           </div>
         </div>
         
-        ${recipe.youtubeSearch ? `
-          <div style="margin-top: 1rem; padding: 0.8rem; background: #fff3cd; border-radius: 8px; font-size: 0.9rem;">
-            <strong>📺 Find video tutorials:</strong> 
-            <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(recipe.youtubeSearch)}" 
-               target="_blank" 
-               style="color: #d69e2e; text-decoration: none; margin-left: 0.5rem;">
-              Search "${recipe.youtubeSearch}" on YouTube →
-            </a>
-          </div>
-        ` : ''}
+        <div style="margin-top: 1rem; padding: 0.8rem; background: #fff3cd; border-radius: 8px; font-size: 0.9rem;">
+          <strong>📺 Find video tutorials:</strong> 
+          <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(recipe.youtubeSearch)}" 
+             target="_blank" 
+             style="color: #d69e2e; text-decoration: none; margin-left: 0.5rem;">
+            Search "${recipe.youtubeSearch}" on YouTube →
+          </a>
+        </div>
       `;
     }
 
+    function loadRecipes() {
+      const mealsContainer = document.getElementById('meals-container');
+      
+      recipes.forEach(recipe => {
+        const mealDiv = document.createElement('div');
+        mealDiv.className = 'meal';
+        mealDiv.dataset.mealId = recipe.id;
+        
+        mealDiv.innerHTML = `
+          <h2>${recipe.title}</h2>
+          <button class="toggle-btn" onclick="toggleInstructions(this)">View Instructions</button>
+          <button class="swap-btn" onclick="swapRecipe(this)" style="margin-left: 1rem; background-color: #e67e22;">Swap Recipe</button>
+          <div class="instructions" style="display: none;">
+            <!-- Instructions will be populated by updateRecipe -->
+          </div>
+        `;
+        
+        mealsContainer.appendChild(mealDiv);
+        updateRecipe(mealDiv, recipe);
+      });
+    }
+
     function updateShoppingList() {
-      // Get all current recipes and their ingredients
-      const meals = document.querySelectorAll('.meal');
+      const groceryList = document.getElementById('grocery-list');
       const allIngredients = new Set();
       
+      // Get all current recipes and extract ingredients
+      const meals = document.querySelectorAll('.meal');
       meals.forEach(meal => {
-        const instructions = meal.querySelector('.instructions ol');
-        if (instructions) {
-          // Extract ingredients from instructions (simplified approach)
-          const text = instructions.textContent.toLowerCase();
-          
-          // Common ingredients to look for
-          const commonIngredients = [
-            'chicken', 'turkey', 'beef', 'pork', 'lentils', 'chickpeas', 'beans',
-            'rice', 'quinoa', 'pasta', 'bread', 'tortillas',
-            'tomatoes', 'peppers', 'broccoli', 'spinach', 'carrots', 'celery',
-            'potatoes', 'sweet potatoes', 'avocado', 'mushrooms', 'cabbage',
-            'garlic', 'herbs', 'olive oil', 'cheese', 'lemon', 'lime'
-          ];
-          
-          commonIngredients.forEach(ingredient => {
-            if (text.includes(ingredient)) {
-              allIngredients.add(ingredient);
-            }
+        const mealId = parseInt(meal.dataset.mealId);
+        const recipe = recipes[mealId];
+        if (recipe && recipe.ingredients) {
+          recipe.ingredients.forEach(ingredient => {
+            allIngredients.add(ingredient);
           });
         }
       });
       
-      // Note: For a complete implementation, you'd want to call Claude API again
-      // to generate a proper shopping list based on all current recipes
-      console.log('Updated ingredients needed:', Array.from(allIngredients));
+      // Clear current grocery list (except the add item input)
+      const existingItems = groceryList.querySelectorAll('.grocery-item');
+      existingItems.forEach(item => item.remove());
+      
+      // Add all ingredients to grocery list
+      Array.from(allIngredients).sort().forEach(ingredient => {
+        const div = document.createElement('div');
+        div.className = 'grocery-item';
+        div.innerHTML = `<input type="checkbox"><label>${ingredient}</label><button class="remove-btn" onclick="removeItem(this)">✕</button>`;
+        groceryList.appendChild(div);
+      });
     }
+
+    // Load recipes when page loads
+    window.addEventListener('load', () => {
+      loadRecipes();
+      updateShoppingList();
+    });
     </script>
 
 
