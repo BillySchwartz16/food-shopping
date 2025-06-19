@@ -528,6 +528,7 @@
     <div class="grocery-controls">
       <button id="clear-checked" onclick="clearCheckedItems()">Clear Checked</button>
       <button id="toggle-all" onclick="toggleAllItems()">Check All</button>
+      <button id="hide-checked" onclick="toggleHideChecked()">Hide Checked</button>
     </div>
   </div>
   
@@ -592,7 +593,16 @@
     function toggleCheckbox(label) {
       const checkbox = label.parentElement.querySelector('input[type="checkbox"]');
       checkbox.checked = !checkbox.checked;
-      checkbox.parentElement.classList.toggle('checked', checkbox.checked);
+      const item = checkbox.parentElement;
+      item.classList.toggle('checked', checkbox.checked);
+      
+      // Handle hide/show logic
+      if (hideCheckedItems && checkbox.checked) {
+        item.style.display = 'none';
+      } else if (!hideCheckedItems) {
+        item.style.display = 'flex';
+      }
+      
       updateGroceryStats();
     }
 
@@ -789,15 +799,38 @@
       updateGroceryStats();
     }
 
+    let hideCheckedItems = false;
+
     function normalizeIngredientName(ingredient) {
       // Remove common quantity indicators and normalize for grouping
-      return ingredient
+      const normalized = ingredient
         .replace(/^\d+(\s*\/\s*\d+)?\s*(cups?|tbsp|tsp|oz|lbs?|cans?|large|medium|small|boneless|skinless)\s*/i, '') // Handle fractions like 1/2, 1 1/2
         .replace(/^\d+(\s*\/\s*\d+)?\s*/, '') // Remove leading numbers and fractions
         .replace(/\s*\([^)]*\)/, '') // Remove parenthetical info
         .replace(/,.*$/, '') // Remove everything after comma
         .trim()
         .toLowerCase();
+      
+      // Return original ingredient if normalization results in empty string
+      return normalized || ingredient.trim();
+    }
+
+    function toggleHideChecked() {
+      hideCheckedItems = !hideCheckedItems;
+      const button = document.getElementById('hide-checked');
+      const checkedItems = document.querySelectorAll('.grocery-item.checked');
+      
+      if (hideCheckedItems) {
+        button.textContent = 'Show Checked';
+        checkedItems.forEach(item => {
+          item.style.display = 'none';
+        });
+      } else {
+        button.textContent = 'Hide Checked';
+        checkedItems.forEach(item => {
+          item.style.display = 'flex';
+        });
+      }
     }
 
     // Load recipes when page loads
@@ -808,7 +841,15 @@
       // Add event listeners for checkbox changes
       document.addEventListener('change', (e) => {
         if (e.target.type === 'checkbox' && e.target.closest('.grocery-item')) {
-          e.target.parentElement.classList.toggle('checked', e.target.checked);
+          const item = e.target.parentElement;
+          item.classList.toggle('checked', e.target.checked);
+          
+          // Handle hide/show logic
+          if (hideCheckedItems && e.target.checked) {
+            item.style.display = 'none';
+          } else if (!hideCheckedItems) {
+            item.style.display = 'flex';
+          }
         }
       });
     });
