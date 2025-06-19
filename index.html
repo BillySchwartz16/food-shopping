@@ -572,9 +572,17 @@
       const input = document.getElementById('new-item');
       const value = input.value.trim();
       if (value) {
+        // Check if item already exists
+        const existingItems = Array.from(document.querySelectorAll('.grocery-item label')).map(label => label.textContent.toLowerCase());
+        const itemExists = existingItems.includes(value.toLowerCase());
+        
         const div = document.createElement('div');
         div.className = 'grocery-item';
-        div.innerHTML = `<input type="checkbox" onchange="updateGroceryStats()"><label onclick="toggleCheckbox(this)">${value}</label><button class="remove-btn" onclick="removeItem(this)">✕</button>`;
+        
+        // If duplicate, add a count or indicator
+        const displayValue = itemExists ? `${value} (duplicate)` : value;
+        
+        div.innerHTML = `<input type="checkbox" onchange="updateGroceryStats()"><label onclick="toggleCheckbox(this)">${displayValue}</label><button class="remove-btn" onclick="removeItem(this)">✕</button>`;
         document.getElementById('grocery-list').appendChild(div);
         input.value = '';
         updateGroceryStats();
