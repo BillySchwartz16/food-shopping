@@ -794,9 +794,15 @@
         mealDiv.dataset.mealId = recipe.id;
         
         mealDiv.innerHTML = `
-          <h2>${recipe.title}</h2>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+            <h2 style="margin: 0; flex: 1;">${recipe.title}</h2>
+            <select onchange="swapToSpecificRecipe(this)" style="padding: 0.4rem 0.8rem; border: 2px solid #e2e8f0; border-radius: 8px; background: white; font-size: 0.9rem; cursor: pointer; min-width: 150px;">
+              <option value="">Swap to...</option>
+              ${recipes.map(r => r.id !== recipe.id ? `<option value="${r.id}">${r.title}</option>` : '').join('')}
+            </select>
+          </div>
           <button class="toggle-btn" onclick="toggleInstructions(this)">View Instructions</button>
-          <button class="swap-btn" onclick="swapRecipe(this)" style="margin-left: 1rem; background-color: #e67e22;">Swap Recipe</button>
+          <button class="swap-btn" onclick="swapRecipe(this)" style="margin-left: 1rem; background-color: #e67e22;">Random Swap</button>
           <button class="youtube-btn" onclick="searchYouTube('${recipe.youtubeSearch}')" style="margin-left: 1rem; background: linear-gradient(135deg, #ff0000, #cc0000);">📺 YouTube</button>
           <div class="instructions" style="display: none;">
             <!-- Instructions will be populated by updateRecipe -->
@@ -953,9 +959,15 @@
           mealDiv.dataset.mealId = recipe.id;
           
           mealDiv.innerHTML = `
-            <h2>${recipe.title}</h2>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+              <h2 style="margin: 0; flex: 1;">${recipe.title}</h2>
+              <select onchange="swapToSpecificRecipe(this)" style="padding: 0.4rem 0.8rem; border: 2px solid #e2e8f0; border-radius: 8px; background: white; font-size: 0.9rem; cursor: pointer; min-width: 150px;">
+                <option value="">Swap to...</option>
+                ${recipes.map(r => r.id !== recipe.id ? `<option value="${r.id}">${r.title}</option>` : '').join('')}
+              </select>
+            </div>
             <button class="toggle-btn" onclick="toggleInstructions(this)">View Instructions</button>
-            <button class="swap-btn" onclick="swapRecipe(this)" style="margin-left: 1rem; background-color: #e67e22;">Swap Recipe</button>
+            <button class="swap-btn" onclick="swapRecipe(this)" style="margin-left: 1rem; background-color: #e67e22;">Random Swap</button>
             <button class="youtube-btn" onclick="searchYouTube('${recipe.youtubeSearch}')" style="margin-left: 1rem; background: linear-gradient(135deg, #ff0000, #cc0000);">📺 YouTube</button>
             <div class="instructions" style="display: none;">
               <!-- Instructions will be populated by updateRecipe -->
@@ -978,6 +990,37 @@
     function searchYouTube(searchQuery) {
       const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`;
       window.open(url, '_blank');
+    }
+
+    function swapToSpecificRecipe(selectElement) {
+      const selectedRecipeId = parseInt(selectElement.value);
+      if (!selectedRecipeId) return;
+      
+      const mealDiv = selectElement.closest('.meal');
+      const currentMealId = parseInt(mealDiv.dataset.mealId);
+      const newRecipe = recipes.find(r => r.id === selectedRecipeId);
+      
+      if (!newRecipe) return;
+      
+      // Update the currently displayed recipes array
+      const currentIndex = currentlyDisplayedRecipes.indexOf(currentMealId);
+      if (currentIndex !== -1) {
+        currentlyDisplayedRecipes[currentIndex] = newRecipe.id;
+      }
+      
+      // Update the meal div with new recipe
+      mealDiv.dataset.mealId = newRecipe.id;
+      updateRecipe(mealDiv, newRecipe);
+      
+      // Update the dropdown to show new options (excluding the newly selected recipe)
+      const dropdown = mealDiv.querySelector('select');
+      dropdown.innerHTML = `
+        <option value="">Swap to...</option>
+        ${recipes.map(r => r.id !== newRecipe.id ? `<option value="${r.id}">${r.title}</option>` : '').join('')}
+      `;
+      
+      updateShoppingList();
+      saveState();
     }
 
     function normalizeIngredientName(ingredient) {
