@@ -1180,8 +1180,11 @@
     }
 
     function normalizeIngredientName(ingredient) {
+      // First scale the ingredient to round up quantities
+      const scaledIngredient = scaleIngredient(ingredient, 1); // Scale by 1 to apply rounding
+      
       // Remove common quantity indicators and normalize for grouping
-      const normalized = ingredient
+      const normalized = scaledIngredient
         .replace(/^\d+(\s*\/\s*\d+)?\s*(cups?|tbsp|tsp|oz|lbs?|cans?|large|medium|small|boneless|skinless)\s*/i, '') // Handle fractions like 1/2, 1 1/2
         .replace(/^\d+(\s*\/\s*\d+)?\s*/, '') // Remove leading numbers and fractions
         .replace(/\s*\([^)]*\)/, '') // Remove parenthetical info
@@ -1190,7 +1193,7 @@
         .toLowerCase();
       
       // Return original ingredient if normalization results in empty string
-      return normalized || ingredient.trim();
+      return normalized || scaledIngredient.trim();
     }
 
     function toggleHideChecked() {
