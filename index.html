@@ -1,0 +1,271 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="theme-color" content="#2a7a64">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js");
+      });
+    }
+  </script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Heart-Healthy Dinners & Grocery List</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f7f9fb;
+      color: #333;
+      max-width: 800px;
+      margin: auto;
+      padding: 2rem;
+    }
+    h1, h2 {
+      color: #2a7a64;
+    }
+    .meal, .grocery {
+      background: #ffffff;
+      border: 1px solid #d6e0e6;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .grocery {
+      background: #e8f5f0;
+    }
+    .instructions {
+      display: none;
+      margin-top: 1rem;
+    }
+    .toggle-btn {
+      background: none;
+      color: #2a7a64;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      text-decoration: underline;
+      padding: 0;
+    }
+  
+    .remove-btn {
+      margin-left: 1rem;
+      background-color: #a94442;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 0.2rem 0.5rem;
+      cursor: pointer;
+    }
+    .remove-btn:hover {
+      background-color: #922d2b;
+    }
+    input[type="text"] {
+      padding: 0.4rem;
+      margin-top: 1rem;
+      margin-right: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 70%;
+    }
+    button {
+      padding: 0.4rem 0.8rem;
+      background-color: #2a7a64;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #256c58;
+    }
+    
+    @media (max-width: 600px) {
+      body {
+        padding: 1rem;
+      }
+      input[type="text"] {
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+      button {
+        width: 100%;
+        margin-top: 0.3rem;
+      }
+      li {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .remove-btn {
+        margin: 0.3rem 0 0 0;
+      }
+    }
+    </style>
+
+
+</head>
+<body>
+
+  <h1>5 Heart-Healthy Dinners (No Fish or Onions)</h1>
+
+  <div class="meal">
+    <h2>Grilled Lemon Herb Chicken</h2>
+    <button class="toggle-btn" onclick="toggleInstructions(this)">View Instructions</button>
+    <div class="instructions">
+      <ol>
+        <li>Marinate chicken with lemon juice, garlic, herbs, olive oil, salt and pepper for 30 minutes.</li>
+        <li>Grill on medium-high heat for 6–7 minutes per side until cooked through.</li>
+        <li>Cook quinoa in low-sodium broth as per package instructions.</li>
+        <li>Steam broccoli and toss with lemon zest and olive oil before serving.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="meal">
+    <h2>Stuffed Bell Peppers with Turkey</h2>
+    <button class="toggle-btn" onclick="toggleInstructions(this)">View Instructions</button>
+    <div class="instructions">
+      <ol>
+        <li>Preheat oven to 375°F (190°C).</li>
+        <li>Sauté turkey with garlic and tomatoes, mix with cooked brown rice.</li>
+        <li>Stuff mixture into halved bell peppers, top with a bit of cheese.</li>
+        <li>Bake for 25–30 minutes until peppers are tender.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="meal">
+    <h2>Lentil and Sweet Potato Stew</h2>
+    <button class="toggle-btn" onclick="toggleInstructions(this)">View Instructions</button>
+    <div class="instructions">
+      <ol>
+        <li>Sauté diced celery and carrots for 5 minutes.</li>
+        <li>Add sweet potatoes, lentils, and seasonings. Cover with water or broth.</li>
+        <li>Simmer for 25–30 minutes until lentils are soft.</li>
+        <li>Serve with whole grain bread.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="meal">
+    <h2>Whole Wheat Pasta with Vegetables</h2>
+    <button class="toggle-btn" onclick="toggleInstructions(this)">View Instructions</button>
+    <div class="instructions">
+      <ol>
+        <li>Cook whole wheat pasta as directed.</li>
+        <li>Sauté mushrooms, spinach, garlic, and tomatoes in olive oil.</li>
+        <li>Combine with drained pasta and sprinkle with fresh basil.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="meal">
+    <h2>Chickpea & Avocado Tacos</h2>
+    <button class="toggle-btn" onclick="toggleInstructions(this)">View Instructions</button>
+    <div class="instructions">
+      <ol>
+        <li>Mash chickpeas with avocado, cumin, lime juice, salt and pepper.</li>
+        <li>Prepare cabbage slaw with shredded cabbage, carrots, lime juice.</li>
+        <li>Fill whole grain tortillas with chickpea mix and slaw.</li>
+      </ol>
+    </div>
+  </div>
+
+  <h2>🛒 Grocery List</h2>
+  
+<div class="grocery">
+  <ul id="grocery-list">
+    <li><label><input type="checkbox"> Skinless chicken breasts</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Lemons</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Garlic</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Fresh herbs</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Quinoa</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Broccoli</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Red and yellow bell peppers</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Ground turkey</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Brown rice</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Diced tomatoes</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Reduced-fat cheese</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Lentils</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Sweet potatoes</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Carrots</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Celery</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Whole grain bread</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Whole wheat pasta</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Spinach</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Mushrooms</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Cherry tomatoes</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Avocados</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Chickpeas</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Whole grain tortillas</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Red cabbage</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Cumin, chili powder, smoked paprika</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Olive oil</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+    <li><label><input type="checkbox"> Lime</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
+  </ul>
+  <div>
+    <input type="text" id="new-item" placeholder="Add grocery item...">
+    <button onclick="addItem()">Add</button>
+  </div>
+
+    <ul>
+      <li><input type="checkbox"> Skinless chicken breasts</li>
+      <li><input type="checkbox"> Lemons</li>
+      <li><input type="checkbox"> Garlic</li>
+      <li><input type="checkbox"> Fresh herbs</li>
+      <li><input type="checkbox"> Quinoa</li>
+      <li><input type="checkbox"> Broccoli</li>
+      <li><input type="checkbox"> Red and yellow bell peppers</li>
+      <li><input type="checkbox"> Ground turkey</li>
+      <li><input type="checkbox"> Brown rice</li>
+      <li><input type="checkbox"> Diced tomatoes</li>
+      <li><input type="checkbox"> Reduced-fat cheese</li>
+      <li><input type="checkbox"> Lentils</li>
+      <li><input type="checkbox"> Sweet potatoes</li>
+      <li><input type="checkbox"> Carrots</li>
+      <li><input type="checkbox"> Celery</li>
+      <li><input type="checkbox"> Whole grain bread</li>
+      <li><input type="checkbox"> Whole wheat pasta</li>
+      <li><input type="checkbox"> Spinach</li>
+      <li><input type="checkbox"> Mushrooms</li>
+      <li><input type="checkbox"> Cherry tomatoes</li>
+      <li><input type="checkbox"> Avocados</li>
+      <li><input type="checkbox"> Chickpeas</li>
+      <li><input type="checkbox"> Whole grain tortillas</li>
+      <li><input type="checkbox"> Red cabbage</li>
+      <li><input type="checkbox"> Cumin, chili powder, smoked paprika</li>
+      <li><input type="checkbox"> Olive oil</li>
+      <li><input type="checkbox"> Lime</li>
+    </ul>
+  </div>
+
+  <script>
+    function toggleInstructions(button) {
+      const div = button.nextElementSibling;
+      div.style.display = div.style.display === "block" ? "none" : "block";
+    }
+  
+    function addItem() {
+      const input = document.getElementById('new-item');
+      const value = input.value.trim();
+      if (value) {
+        const li = document.createElement('li');
+        li.innerHTML = `<label><input type="checkbox"> ${value}</label><button class="remove-btn" onclick="removeItem(this)">✕</button>`;
+        document.getElementById('grocery-list').appendChild(li);
+        input.value = '';
+      }
+    }
+
+    function removeItem(button) {
+      const li = button.parentElement;
+      li.remove();
+    }
+    </script>
+
+
+</body>
+</html>
