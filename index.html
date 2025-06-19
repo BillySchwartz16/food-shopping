@@ -117,137 +117,401 @@
       color: white;
     }
     
-    .grocery-item {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-      transition: all 0.2s ease;
-      touch-action: manipulation;
-      min-height: 64px;
+    .grocery-container {
+      background: #f8fafc;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    
+    .grocery-header-new {
+      background: linear-gradient(135deg, #48bb78, #38a169);
+      color: white;
+      padding: 1.5rem;
       position: relative;
     }
     
-    .grocery-item:hover {
-      border-color: #cbd5e0;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      transform: translateY(-1px);
-    }
-    
-    .grocery-item.checked {
-      background: linear-gradient(135deg, #f0fff4, #e6fffa);
-      border-color: #68d391;
-      opacity: 0.8;
-    }
-    
-    .grocery-item.checked label {
-      text-decoration: line-through;
-      color: #38a169;
-      opacity: 0.7;
-    }
-    
-    .grocery-item input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-      accent-color: #48bb78;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-    
-    .grocery-item label {
-      font-weight: 500;
-      font-size: 0.95rem;
-      line-height: 1.4;
-      color: #2d3748;
-      cursor: pointer;
-      word-break: break-word;
-      user-select: none;
-    }
-    
-    .remove-btn {
-      background: #e53e3e;
+    .shopping-mode-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.3);
       color: white;
+      border-radius: 25px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+    }
+    
+    .shopping-mode-toggle:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .shopping-mode-toggle.active {
+      background: white;
+      color: #48bb78;
+      border-color: white;
+    }
+    
+    .progress-ring {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1rem;
+    }
+    
+    .progress-ring-circle {
+      stroke: rgba(255, 255, 255, 0.3);
+      stroke-width: 4;
+      fill: transparent;
+      r: 35;
+      cx: 40;
+      cy: 40;
+    }
+    
+    .progress-ring-progress {
+      stroke: white;
+      stroke-width: 4;
+      fill: transparent;
+      r: 35;
+      cx: 40;
+      cy: 40;
+      stroke-dasharray: 220;
+      stroke-dashoffset: 220;
+      transition: stroke-dashoffset 0.5s ease;
+      transform: rotate(-90deg);
+      transform-origin: 40px 40px;
+    }
+    
+    .smart-add-container {
+      position: relative;
+      margin: 1.5rem;
+    }
+    
+    .smart-add-input {
+      width: 100%;
+      padding: 1rem 1rem 1rem 3rem;
       border: none;
-      border-radius: 8px;
-      width: 36px;
-      height: 36px;
-      display: inline-flex;
+      border-radius: 15px;
+      font-size: 1rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      background: white;
+    }
+    
+    .smart-add-input:focus {
+      outline: none;
+      box-shadow: 0 4px 25px rgba(72, 187, 120, 0.3);
+    }
+    
+    .add-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #48bb78;
+      font-size: 1.2rem;
+    }
+    
+    .suggestions-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 0.5rem;
+    }
+    
+    .suggestion-item {
+      padding: 1rem;
+      cursor: pointer;
+      border-bottom: 1px solid #f1f5f9;
+      transition: background 0.2s ease;
+    }
+    
+    .suggestion-item:hover {
+      background: #f8fafc;
+    }
+    
+    .suggestion-item:last-child {
+      border-bottom: none;
+    }
+    
+    .category-section {
+      margin-bottom: 1.5rem;
+    }
+    
+    .category-header {
+      display: flex;
+      align-items: center;
+      padding: 1rem 1.5rem 0.5rem;
+      font-weight: 600;
+      color: #4a5568;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .category-icon {
+      width: 24px;
+      height: 24px;
+      margin-right: 0.75rem;
+      border-radius: 6px;
+      display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
-      font-weight: 600;
-      transition: all 0.2s ease;
-      flex-shrink: 0;
-      opacity: 0.7;
-    }
-    
-    .remove-btn:hover {
-      background: #c53030;
-      opacity: 1;
-      transform: scale(1.05);
-    }
-    
-    .remove-btn:active {
-      transform: scale(0.95);
-    }
-    
-    .grocery-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      max-height: 60vh;
-      overflow-y: auto;
-      padding: 4px;
-    }
-    
-    .grocery-stats-badge {
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-weight: 500;
       font-size: 0.9rem;
     }
     
-    @media (max-width: 768px) {
-      .grocery-grid {
-        max-height: 50vh;
-      }
-      
-      .grocery-item {
-        min-height: 72px;
-      }
-      
-      .grocery-item input[type="checkbox"] {
-        width: 22px;
-        height: 22px;
-      }
-      
-      .grocery-item label {
-        font-size: 1rem;
-      }
-      
-      .remove-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 16px;
-      }
+    .category-produce .category-icon { background: #dcfce7; }
+    .category-dairy .category-icon { background: #dbeafe; }
+    .category-meat .category-icon { background: #fee2e2; }
+    .category-pantry .category-icon { background: #fef3c7; }
+    
+    .category-items {
+      padding: 0 1rem;
     }
     
-    @media (max-width: 480px) {
-      .grocery-item {
-        min-height: 80px;
+    .grocery-item-new {
+      background: white;
+      border-radius: 12px;
+      margin-bottom: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .grocery-item-new:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transform: translateY(-1px);
+    }
+    
+    .grocery-item-new.checked {
+      background: #f0fdf4;
+      opacity: 0.7;
+    }
+    
+    .grocery-item-new.checked .item-content {
+      text-decoration: line-through;
+      color: #16a34a;
+    }
+    
+    .grocery-item-new.shopping-mode {
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      border-radius: 16px;
+    }
+    
+    .item-main {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      cursor: pointer;
+    }
+    
+    .item-checkbox {
+      width: 24px;
+      height: 24px;
+      margin-right: 1rem;
+      accent-color: #16a34a;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    
+    .shopping-mode .item-checkbox {
+      width: 32px;
+      height: 32px;
+      margin-right: 1.5rem;
+    }
+    
+    .item-content {
+      flex: 1;
+      font-weight: 500;
+      color: #1f2937;
+      user-select: none;
+    }
+    
+    .shopping-mode .item-content {
+      font-size: 1.2rem;
+      line-height: 1.4;
+    }
+    
+    .item-quantity {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-right: 1rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .grocery-item-new:hover .item-quantity {
+      opacity: 1;
+    }
+    
+    .quantity-btn {
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 50%;
+      background: #f1f5f9;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    
+    .quantity-btn:hover {
+      background: #e2e8f0;
+      color: #475569;
+    }
+    
+    .quantity-display {
+      min-width: 24px;
+      text-align: center;
+      font-weight: 600;
+      color: #374151;
+      font-size: 0.9rem;
+    }
+    
+    .item-actions {
+      display: flex;
+      gap: 0.5rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .grocery-item-new:hover .item-actions {
+      opacity: 1;
+    }
+    
+    .action-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+    }
+    
+    .delete-btn {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+    
+    .delete-btn:hover {
+      background: #fee2e2;
+      transform: scale(1.1);
+    }
+    
+    .swipe-actions {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      background: #dc2626;
+      color: white;
+      padding: 0 1rem;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+    
+    .grocery-item-new.swiped .swipe-actions {
+      transform: translateX(0);
+    }
+    
+    .quick-actions {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: white;
+      border-top: 1px solid #f1f5f9;
+    }
+    
+    .quick-action-btn {
+      flex: 1;
+      padding: 0.75rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      background: white;
+      color: #6b7280;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .quick-action-btn:hover {
+      border-color: #48bb78;
+      color: #48bb78;
+      background: #f0fdf4;
+    }
+    
+    .quick-action-btn.active {
+      background: #48bb78;
+      color: white;
+      border-color: #48bb78;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: #6b7280;
+    }
+    
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    
+    @media (max-width: 768px) {
+      .grocery-header-new {
+        padding: 1rem;
       }
       
-      .grocery-item input[type="checkbox"] {
-        width: 24px;
-        height: 24px;
+      .shopping-mode-toggle {
+        position: static;
+        margin-top: 1rem;
+        width: 100%;
       }
       
-      .remove-btn {
-        width: 44px;
-        height: 44px;
-        font-size: 18px;
+      .progress-ring {
+        width: 60px;
+        height: 60px;
+      }
+      
+      .smart-add-container {
+        margin: 1rem;
+      }
+      
+      .item-quantity,
+      .item-actions {
+        opacity: 1;
+      }
+      
+      .quick-actions {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      
+      .quick-action-btn {
+        min-width: calc(50% - 0.25rem);
       }
     }
     </style>
@@ -287,43 +551,55 @@
         <!-- Meals will be loaded here by JavaScript -->
       </div>
 
-      <div class="card grocery-card">
-        <div class="card-header">
-          <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
-            <h2 class="mb-0">🛒 Grocery List</h2>
-            <div class="d-flex flex-wrap gap-2">
-              <button id="clear-checked" onclick="clearCheckedItems()" class="btn btn-gradient-primary btn-sm">Clear Checked</button>
-              <button id="toggle-all" onclick="toggleAllItems()" class="btn btn-gradient-primary btn-sm">Check All</button>
-              <button id="hide-checked" onclick="toggleHideChecked()" class="btn btn-gradient-primary btn-sm">Hide Checked</button>
-              <button onclick="clearAllData()" class="btn btn-gradient-danger btn-sm">Clear All Data</button>
-            </div>
-          </div>
-          <div class="d-flex flex-wrap gap-2 mt-3 justify-content-center">
-            <button onclick="sortGroceryList('produce')" class="btn btn-gradient-success btn-sm">🥬 Produce</button>
-            <button onclick="sortGroceryList('pantry')" class="btn btn-warning btn-sm">🥫 Pantry</button>
-            <button onclick="sortGroceryList('dairy')" class="btn btn-info btn-sm">🥛 Dairy</button>
-            <button onclick="sortGroceryList('meat')" class="btn btn-gradient-danger btn-sm">🥩 Meat</button>
-            <button onclick="sortGroceryList('alphabetical')" class="btn btn-secondary btn-sm">🔤 A-Z</button>
+      <div class="grocery-container">
+        <div class="grocery-header-new">
+          <button class="shopping-mode-toggle" onclick="toggleShoppingMode()" id="shopping-mode-btn">
+            🛍️ Shopping Mode
+          </button>
+          
+          <div class="text-center">
+            <svg class="progress-ring">
+              <circle class="progress-ring-circle"></circle>
+              <circle class="progress-ring-progress" id="progress-circle"></circle>
+            </svg>
+            <h2 class="mb-2">🛒 Smart Grocery List</h2>
+            <div id="grocery-stats-new" class="fs-5 opacity-90">0 items • 0% complete</div>
           </div>
         </div>
-        
-        <div class="card-body">
-          <div class="row mb-3">
-            <div class="col">
-              <div class="input-group">
-                <input type="text" id="new-item" class="form-control" placeholder="Add grocery item..." onkeypress="handleAddKeyPress(event)">
-                <button onclick="addItem()" class="btn btn-gradient-success">+ Add</button>
-              </div>
-            </div>
+
+        <div class="smart-add-container">
+          <div class="position-relative">
+            <i class="add-icon">+</i>
+            <input 
+              type="text" 
+              id="smart-add-input" 
+              class="smart-add-input" 
+              placeholder="Add items to your list..."
+              oninput="showSuggestions(this.value)"
+              onkeypress="handleSmartAddKeyPress(event)"
+              autocomplete="off"
+            >
+            <div id="suggestions-dropdown" class="suggestions-dropdown" style="display: none;"></div>
           </div>
-          
-          <div class="text-center mb-3">
-            <span id="grocery-stats" class="grocery-stats-badge">0 items • 0 checked</span>
-          </div>
-          
-          <div id="grocery-list" class="grocery-grid">
-            <!-- Items will be populated by JavaScript -->
-          </div>
+        </div>
+
+        <div id="grocery-categories" class="grocery-categories">
+          <!-- Categories will be populated by JavaScript -->
+        </div>
+
+        <div class="quick-actions">
+          <button class="quick-action-btn" onclick="toggleAllItemsNew()" id="toggle-all-btn">
+            Check All
+          </button>
+          <button class="quick-action-btn" onclick="clearCheckedItemsNew()">
+            Clear Done
+          </button>
+          <button class="quick-action-btn" onclick="toggleHideCheckedNew()" id="hide-checked-btn">
+            Hide Done
+          </button>
+          <button class="quick-action-btn" onclick="clearAllDataNew()">
+            Clear All
+          </button>
         </div>
       </div>
     </div>
@@ -346,55 +622,97 @@
       }
     }
   
-    function addItem() {
-      const input = document.getElementById('new-item');
-      const value = input.value.trim();
-      if (value) {
-        const groceryList = document.getElementById('grocery-list');
-        const existingItems = Array.from(groceryList.querySelectorAll('.grocery-item'));
-        const baseName = value.toLowerCase();
-        
-        // Find and remove existing items with the same base name
-        let maxCount = 0;
-        const itemsToRemove = [];
-        
-        existingItems.forEach(item => {
-          const label = item.querySelector('label');
-          const labelText = label.textContent;
-          const labelLower = labelText.toLowerCase();
-          
-          // Check if this item matches the base name
-          if (labelLower === baseName || labelLower.startsWith(baseName + ' (')) {
-            itemsToRemove.push(item);
-            
-            // Extract count from existing item
-            const match = labelText.match(/\((\d+)\)$/);
-            if (match) {
-              maxCount = Math.max(maxCount, parseInt(match[1]));
-            } else if (labelLower === baseName) {
-              maxCount = Math.max(maxCount, 1);
-            }
-          }
-        });
-        
-        // Remove existing items
-        itemsToRemove.forEach(item => item.remove());
-        
-        // Create new item with incremented count
-        const div = document.createElement('div');
-        div.className = 'grocery-item p-3 d-flex align-items-center';
-        const newCount = maxCount + 1;
-        const displayValue = newCount > 1 ? `${value} (${newCount})` : value;
+    const commonItems = [
+      'Milk', 'Bread', 'Eggs', 'Butter', 'Cheese', 'Chicken breast', 'Ground turkey',
+      'Bananas', 'Apples', 'Spinach', 'Tomatoes', 'Bell peppers', 'Carrots', 'Broccoli',
+      'Rice', 'Pasta', 'Olive oil', 'Garlic', 'Sweet potatoes', 'Avocados', 'Yogurt',
+      'Salmon', 'Quinoa', 'Black beans', 'Almonds', 'Blueberries', 'Lemon', 'Onions'
+    ];
+
+    let isShoppingMode = false;
+    let hideCheckedItemsNew = false;
+
+    function addItemNew(itemName, quantity = 1) {
+      if (!itemName.trim()) return;
       
-        div.innerHTML = `
-          <input type="checkbox" class="me-3" onchange="updateGroceryStats(); saveState();">
-          <label class="flex-grow-1 mb-0" onclick="toggleCheckbox(this)">${displayValue}</label>
-          <button class="remove-btn ms-2" onclick="removeItem(this)" aria-label="Remove ${displayValue}">×</button>
-        `;
-        groceryList.appendChild(div);
+      const category = categorizeIngredient(itemName);
+      const existingItem = findExistingItem(itemName);
+      
+      if (existingItem) {
+        updateItemQuantity(existingItem, quantity);
+      } else {
+        createNewItem(itemName, quantity, category);
+      }
+      
+      updateGroceryDisplayNew();
+      updateGroceryStatsNew();
+      saveState();
+    }
+
+    function createNewItem(name, quantity, category) {
+      const item = {
+        id: Date.now() + Math.random(),
+        name: name.trim(),
+        quantity: quantity,
+        checked: false,
+        category: category
+      };
+      
+      if (!window.groceryItems) {
+        window.groceryItems = [];
+      }
+      
+      window.groceryItems.push(item);
+    }
+
+    function findExistingItem(name) {
+      if (!window.groceryItems) return null;
+      return window.groceryItems.find(item => 
+        item.name.toLowerCase() === name.toLowerCase().trim()
+      );
+    }
+
+    function updateItemQuantity(item, additionalQuantity) {
+      item.quantity += additionalQuantity;
+    }
+
+    function showSuggestions(value) {
+      const dropdown = document.getElementById('suggestions-dropdown');
+      
+      if (!value.trim()) {
+        dropdown.style.display = 'none';
+        return;
+      }
+      
+      const suggestions = commonItems.filter(item => 
+        item.toLowerCase().includes(value.toLowerCase()) &&
+        !findExistingItem(item)
+      ).slice(0, 5);
+      
+      if (suggestions.length === 0) {
+        dropdown.style.display = 'none';
+        return;
+      }
+      
+      dropdown.innerHTML = suggestions.map(item => 
+        `<div class="suggestion-item" onclick="selectSuggestion('${item}')">${item}</div>`
+      ).join('');
+      
+      dropdown.style.display = 'block';
+    }
+
+    function selectSuggestion(item) {
+      addItemNew(item);
+      document.getElementById('smart-add-input').value = '';
+      document.getElementById('suggestions-dropdown').style.display = 'none';
+    }
+
+    function handleSmartAddKeyPress(event) {
+      if (event.key === 'Enter') {
+        const input = event.target;
+        addItemNew(input.value);
         input.value = '';
-        updateGroceryStats();
-        saveState();
+        document.getElementById('suggestions-dropdown').style.display = 'none';
       }
     }
 
@@ -466,13 +784,181 @@
       saveState();
     }
 
-    function updateGroceryStats() {
-      const allItems = document.querySelectorAll('.grocery-item');
-      const checkedItems = document.querySelectorAll('.grocery-item input[type="checkbox"]:checked');
-      const statsElement = document.getElementById('grocery-stats');
+    function updateGroceryStatsNew() {
+      if (!window.groceryItems) {
+        window.groceryItems = [];
+      }
       
+      const totalItems = window.groceryItems.length;
+      const checkedItems = window.groceryItems.filter(item => item.checked).length;
+      const percentage = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
+      
+      const statsElement = document.getElementById('grocery-stats-new');
       if (statsElement) {
-        statsElement.textContent = `${allItems.length} items • ${checkedItems.length} checked`;
+        statsElement.textContent = `${totalItems} items • ${percentage}% complete`;
+      }
+      
+      // Update progress ring
+      const progressCircle = document.getElementById('progress-circle');
+      if (progressCircle) {
+        const circumference = 2 * Math.PI * 35; // radius = 35
+        const offset = circumference - (percentage / 100) * circumference;
+        progressCircle.style.strokeDashoffset = offset;
+      }
+    }
+
+    function updateGroceryDisplayNew() {
+      const container = document.getElementById('grocery-categories');
+      if (!window.groceryItems) {
+        window.groceryItems = [];
+      }
+      
+      if (window.groceryItems.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🛒</div>
+            <h3>Your list is empty</h3>
+            <p>Add items above to get started</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const categories = {
+        produce: { name: 'Fresh Produce', icon: '🥬', items: [] },
+        dairy: { name: 'Dairy & Eggs', icon: '🥛', items: [] },
+        meat: { name: 'Meat & Seafood', icon: '🥩', items: [] },
+        pantry: { name: 'Pantry & Dry Goods', icon: '🥫', items: [] }
+      };
+      
+      // Group items by category
+      window.groceryItems.forEach(item => {
+        if (!hideCheckedItemsNew || !item.checked) {
+          categories[item.category].items.push(item);
+        }
+      });
+      
+      // Render categories
+      container.innerHTML = Object.entries(categories)
+        .filter(([_, category]) => category.items.length > 0)
+        .map(([key, category]) => `
+          <div class="category-section category-${key}">
+            <div class="category-header">
+              <div class="category-icon">${category.icon}</div>
+              ${category.name} (${category.items.length})
+            </div>
+            <div class="category-items">
+              ${category.items.map(item => createItemHTML(item)).join('')}
+            </div>
+          </div>
+        `).join('');
+    }
+
+    function createItemHTML(item) {
+      const shoppingModeClass = isShoppingMode ? 'shopping-mode' : '';
+      const checkedClass = item.checked ? 'checked' : '';
+      
+      return `
+        <div class="grocery-item-new ${shoppingModeClass} ${checkedClass}" data-item-id="${item.id}">
+          <div class="item-main" onclick="toggleItemCheck(${item.id})">
+            <input type="checkbox" class="item-checkbox" ${item.checked ? 'checked' : ''} onchange="event.stopPropagation(); toggleItemCheck(${item.id})">
+            <div class="item-content">${item.name}</div>
+            <div class="item-quantity">
+              <button class="quantity-btn" onclick="event.stopPropagation(); adjustQuantity(${item.id}, -1)">−</button>
+              <span class="quantity-display">${item.quantity}</span>
+              <button class="quantity-btn" onclick="event.stopPropagation(); adjustQuantity(${item.id}, 1)">+</button>
+            </div>
+            <div class="item-actions">
+              <button class="action-btn delete-btn" onclick="event.stopPropagation(); removeItemNew(${item.id})" aria-label="Remove ${item.name}">🗑️</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleItemCheck(itemId) {
+      const item = window.groceryItems.find(i => i.id === itemId);
+      if (item) {
+        item.checked = !item.checked;
+        updateGroceryDisplayNew();
+        updateGroceryStatsNew();
+        saveState();
+      }
+    }
+
+    function adjustQuantity(itemId, change) {
+      const item = window.groceryItems.find(i => i.id === itemId);
+      if (item) {
+        item.quantity = Math.max(1, item.quantity + change);
+        updateGroceryDisplayNew();
+        saveState();
+      }
+    }
+
+    function removeItemNew(itemId) {
+      window.groceryItems = window.groceryItems.filter(item => item.id !== itemId);
+      updateGroceryDisplayNew();
+      updateGroceryStatsNew();
+      saveState();
+    }
+
+    function toggleShoppingMode() {
+      isShoppingMode = !isShoppingMode;
+      const btn = document.getElementById('shopping-mode-btn');
+      
+      if (isShoppingMode) {
+        btn.textContent = '📝 Edit Mode';
+        btn.classList.add('active');
+      } else {
+        btn.textContent = '🛍️ Shopping Mode';
+        btn.classList.remove('active');
+      }
+      
+      updateGroceryDisplayNew();
+      saveState();
+    }
+
+    function toggleAllItemsNew() {
+      if (!window.groceryItems) return;
+      
+      const allChecked = window.groceryItems.every(item => item.checked);
+      window.groceryItems.forEach(item => {
+        item.checked = !allChecked;
+      });
+      
+      const btn = document.getElementById('toggle-all-btn');
+      btn.textContent = allChecked ? 'Check All' : 'Uncheck All';
+      
+      updateGroceryDisplayNew();
+      updateGroceryStatsNew();
+      saveState();
+    }
+
+    function clearCheckedItemsNew() {
+      if (!window.groceryItems) return;
+      
+      window.groceryItems = window.groceryItems.filter(item => !item.checked);
+      updateGroceryDisplayNew();
+      updateGroceryStatsNew();
+      saveState();
+    }
+
+    function toggleHideCheckedNew() {
+      hideCheckedItemsNew = !hideCheckedItemsNew;
+      const btn = document.getElementById('hide-checked-btn');
+      btn.textContent = hideCheckedItemsNew ? 'Show Done' : 'Hide Done';
+      btn.classList.toggle('active', hideCheckedItemsNew);
+      
+      updateGroceryDisplayNew();
+      saveState();
+    }
+
+    function clearAllDataNew() {
+      if (confirm('This will clear all your saved recipes and grocery list. Are you sure?')) {
+        localStorage.removeItem('heartHealthyDinnersState');
+        window.groceryItems = [];
+        updateGroceryDisplayNew();
+        updateGroceryStatsNew();
       }
     }
 
@@ -624,10 +1110,11 @@
     }
 
     function updateShoppingList() {
-      const groceryList = document.getElementById('grocery-list');
-      const ingredientCounts = new Map();
+      if (!window.groceryItems) {
+        window.groceryItems = [];
+      }
       
-      // Get current serving size and scale factor
+      const ingredientCounts = new Map();
       const servingSize = parseInt(document.getElementById('serving-size').value);
       
       // Get all current recipes and count ingredients
@@ -640,9 +1127,7 @@
           const scaleFactor = servingSize / originalServings;
           
           recipe.ingredients.forEach(ingredient => {
-            // Scale the ingredient first
             const scaledIngredient = scaleIngredient(ingredient, scaleFactor);
-            // Normalize ingredient name (remove quantities for grouping)
             const normalizedIngredient = normalizeIngredientName(scaledIngredient);
             const count = ingredientCounts.get(normalizedIngredient) || 0;
             ingredientCounts.set(normalizedIngredient, count + 1);
@@ -650,22 +1135,24 @@
         }
       });
       
-      // Clear current grocery list (except the add item input)
-      const existingItems = groceryList.querySelectorAll('.grocery-item');
-      existingItems.forEach(item => item.remove());
+      // Update existing items or create new ones
+      Array.from(ingredientCounts.entries()).forEach(([ingredient, count]) => {
+        const existingItem = findExistingItem(ingredient);
+        if (existingItem) {
+          existingItem.quantity = count;
+        } else {
+          createNewItem(ingredient, count, categorizeIngredient(ingredient));
+        }
+      });
       
-      // Add all ingredients to grocery list with counts
-      Array.from(ingredientCounts.entries())
-        .sort(([a], [b]) => a.localeCompare(b))
-        .forEach(([ingredient, count]) => {
-          const div = document.createElement('div');
-          div.className = 'grocery-item';
-          const displayName = count > 1 ? `${ingredient} (${count})` : ingredient;
-          div.innerHTML = `<input type="checkbox" onchange="updateGroceryStats()"><label onclick="toggleCheckbox(this)">${displayName}</label><button class="remove-btn" onclick="removeItem(this)">✕</button>`;
-          groceryList.appendChild(div);
-        });
+      // Remove items that are no longer in recipes (but keep manually added items)
+      window.groceryItems = window.groceryItems.filter(item => {
+        const normalizedName = normalizeIngredientName(item.name);
+        return ingredientCounts.has(normalizedName) || item.manuallyAdded;
+      });
       
-      updateGroceryStats();
+      updateGroceryDisplayNew();
+      updateGroceryStatsNew();
     }
 
     let hideCheckedItems = false;
@@ -676,11 +1163,9 @@
         currentlyDisplayedRecipes: currentlyDisplayedRecipes,
         recipeCount: document.getElementById('recipe-count').value,
         servingSize: document.getElementById('serving-size').value,
-        hideCheckedItems: hideCheckedItems,
-        groceryItems: Array.from(document.querySelectorAll('.grocery-item')).map(item => ({
-          text: item.querySelector('label').textContent,
-          checked: item.querySelector('input[type="checkbox"]').checked
-        }))
+        hideCheckedItems: hideCheckedItemsNew,
+        isShoppingMode: isShoppingMode,
+        groceryItems: window.groceryItems || []
       };
       localStorage.setItem('heartHealthyDinnersState', JSON.stringify(state));
     }
@@ -703,10 +1188,21 @@
           
           // Restore hide checked items preference
           if (state.hideCheckedItems) {
-            hideCheckedItems = state.hideCheckedItems;
-            const button = document.getElementById('hide-checked');
-            if (hideCheckedItems) {
-              button.textContent = 'Show Checked';
+            hideCheckedItemsNew = state.hideCheckedItems;
+            const button = document.getElementById('hide-checked-btn');
+            if (hideCheckedItemsNew) {
+              button.textContent = 'Show Done';
+              button.classList.add('active');
+            }
+          }
+          
+          // Restore shopping mode
+          if (state.isShoppingMode) {
+            isShoppingMode = state.isShoppingMode;
+            const button = document.getElementById('shopping-mode-btn');
+            if (isShoppingMode) {
+              button.textContent = '📝 Edit Mode';
+              button.classList.add('active');
             }
           }
           
@@ -720,36 +1216,14 @@
           
           // Restore grocery items
           if (state.groceryItems && state.groceryItems.length > 0) {
-            const groceryList = document.getElementById('grocery-list');
-            // Clear auto-generated items first
-            const existingItems = groceryList.querySelectorAll('.grocery-item');
-            existingItems.forEach(item => item.remove());
-            
-            // Add saved items
-            state.groceryItems.forEach(itemData => {
-              const div = document.createElement('div');
-              div.className = 'grocery-item';
-              if (itemData.checked) {
-                div.classList.add('checked');
-              }
-              div.innerHTML = `
-                <input type="checkbox" class="me-3" ${itemData.checked ? 'checked' : ''} onchange="updateGroceryStats(); saveState();">
-                <label class="flex-grow-1 mb-0" onclick="toggleCheckbox(this)">${itemData.text}</label>
-                <button class="remove-btn ms-2" onclick="removeItem(this)" aria-label="Remove ${itemData.text}">×</button>
-              `;
-              
-              // Apply hide/show logic
-              if (hideCheckedItems && itemData.checked) {
-                div.style.display = 'none';
-              }
-              
-              groceryList.appendChild(div);
-            });
+            window.groceryItems = state.groceryItems;
           } else {
+            window.groceryItems = [];
             updateShoppingList();
           }
           
-          updateGroceryStats();
+          updateGroceryDisplayNew();
+          updateGroceryStatsNew();
           return true;
         }
       } catch (error) {
