@@ -655,7 +655,8 @@
         name: name.trim(),
         quantity: quantity,
         checked: false,
-        category: category
+        category: category,
+        manuallyAdded: true
       };
       
       if (!window.groceryItems) {
@@ -1121,7 +1122,7 @@
       const meals = document.querySelectorAll('[data-meal-id]');
       meals.forEach(meal => {
         const mealId = parseInt(meal.dataset.mealId);
-        const recipe = recipes[mealId];
+        const recipe = recipes.find(r => r.id === mealId);
         if (recipe && recipe.ingredients) {
           const originalServings = parseInt(recipe.servings.split(' ')[0]);
           const scaleFactor = servingSize / originalServings;
@@ -1141,14 +1142,22 @@
         if (existingItem) {
           existingItem.quantity = count;
         } else {
-          createNewItem(ingredient, count, categorizeIngredient(ingredient));
+          const newItem = {
+            id: Date.now() + Math.random(),
+            name: ingredient.trim(),
+            quantity: count,
+            checked: false,
+            category: categorizeIngredient(ingredient),
+            fromRecipe: true
+          };
+          window.groceryItems.push(newItem);
         }
       });
       
       // Remove items that are no longer in recipes (but keep manually added items)
       window.groceryItems = window.groceryItems.filter(item => {
         const normalizedName = normalizeIngredientName(item.name);
-        return ingredientCounts.has(normalizedName) || item.manuallyAdded;
+        return ingredientCounts.has(normalizedName) || item.manuallyAdded || !item.fromRecipe;
       });
       
       updateGroceryDisplayNew();
