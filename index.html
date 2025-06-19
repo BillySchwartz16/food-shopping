@@ -546,6 +546,8 @@
     window.addEventListener('load', () => {
       if (claudeApiKey) {
         document.getElementById('api-config').style.display = 'none';
+      } else {
+        document.getElementById('api-config').style.display = 'block';
       }
     });
 
