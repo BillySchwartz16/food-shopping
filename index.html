@@ -560,14 +560,27 @@
     <h1>💚 Heart-Healthy Dinners</h1>
     <p style="text-align: center; color: #718096; font-size: 1.1rem; margin-bottom: 2rem;">Delicious, nutritious meals without fish or onions</p>
 
-    <div class="recipe-controls" style="text-align: center; margin-bottom: 2rem;">
-      <label for="recipe-count" style="font-weight: 500; color: #4a5568; margin-right: 1rem;">Show recipes:</label>
-      <select id="recipe-count" onchange="updateRecipeDisplay()" style="padding: 0.5rem 1rem; border: 2px solid #e2e8f0; border-radius: 8px; background: white; font-size: 1rem; cursor: pointer;">
-        <option value="3">3 recipes</option>
-        <option value="5" selected>5 recipes</option>
-        <option value="7">7 recipes</option>
-        <option value="10">All recipes</option>
-      </select>
+    <div class="recipe-controls" style="text-align: center; margin-bottom: 2rem; display: flex; gap: 2rem; justify-content: center; align-items: center; flex-wrap: wrap;">
+      <div>
+        <label for="recipe-count" style="font-weight: 500; color: #4a5568; margin-right: 1rem;">Show recipes:</label>
+        <select id="recipe-count" onchange="updateRecipeDisplay()" style="padding: 0.5rem 1rem; border: 2px solid #e2e8f0; border-radius: 8px; background: white; font-size: 1rem; cursor: pointer;">
+          <option value="3">3 recipes</option>
+          <option value="5" selected>5 recipes</option>
+          <option value="7">7 recipes</option>
+          <option value="10">All recipes</option>
+        </select>
+      </div>
+      <div>
+        <label for="serving-size" style="font-weight: 500; color: #4a5568; margin-right: 1rem;">Serving size:</label>
+        <select id="serving-size" onchange="updateServingSizes()" style="padding: 0.5rem 1rem; border: 2px solid #e2e8f0; border-radius: 8px; background: white; font-size: 1rem; cursor: pointer;">
+          <option value="1">1 person</option>
+          <option value="2">2 people</option>
+          <option value="3">3 people</option>
+          <option value="4" selected>4 people</option>
+          <option value="6">6 people</option>
+          <option value="8">8 people</option>
+        </select>
+      </div>
     </div>
 
   <div id="meals-container">
@@ -783,6 +796,14 @@
       // Update title
       mealDiv.querySelector('h2').textContent = recipe.title;
       
+      // Get current serving size
+      const servingSize = parseInt(document.getElementById('serving-size').value);
+      const originalServings = parseInt(recipe.servings.split(' ')[0]); // Extract number from "4 servings"
+      const scaleFactor = servingSize / originalServings;
+      
+      // Scale ingredients
+      const scaledIngredients = recipe.ingredients.map(ingredient => scaleIngredient(ingredient, scaleFactor));
+      
       // Update instructions div with detailed content
       const instructionsDiv = mealDiv.querySelector('.instructions');
       instructionsDiv.innerHTML = `
@@ -790,7 +811,7 @@
           <div style="display: flex; gap: 1rem; font-size: 0.9rem; color: #666;">
             <span>⏱️ Prep: ${recipe.prepTime}</span>
             <span>🍳 Cook: ${recipe.cookTime}</span>
-            <span>🍽️ Serves: ${recipe.servings}</span>
+            <span>🍽️ Serves: ${servingSize} ${servingSize === 1 ? 'person' : 'people'}</span>
           </div>
           <div style="background: #e6fffa; padding: 0.8rem; border-radius: 8px; font-size: 0.9rem; color: #2d5a4a;">
             <strong>💚 Heart-Healthy:</strong> ${recipe.healthNote}
@@ -801,7 +822,7 @@
           <div>
             <h4 style="margin: 0 0 0.5rem 0; color: #4a5568;">Ingredients:</h4>
             <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.9rem;">
-              ${recipe.ingredients.map(ing => `<li style="margin-bottom: 0.3rem;">${ing}</li>`).join('')}
+              ${scaledIngredients.map(ing => `<li style="margin-bottom: 0.3rem;">${ing}</li>`).join('')}
             </ul>
           </div>
           
@@ -883,15 +904,23 @@
       const groceryList = document.getElementById('grocery-list');
       const ingredientCounts = new Map();
       
+      // Get current serving size and scale factor
+      const servingSize = parseInt(document.getElementById('serving-size').value);
+      
       // Get all current recipes and count ingredients
       const meals = document.querySelectorAll('.meal');
       meals.forEach(meal => {
         const mealId = parseInt(meal.dataset.mealId);
         const recipe = recipes[mealId];
         if (recipe && recipe.ingredients) {
+          const originalServings = parseInt(recipe.servings.split(' ')[0]);
+          const scaleFactor = servingSize / originalServings;
+          
           recipe.ingredients.forEach(ingredient => {
+            // Scale the ingredient first
+            const scaledIngredient = scaleIngredient(ingredient, scaleFactor);
             // Normalize ingredient name (remove quantities for grouping)
-            const normalizedIngredient = normalizeIngredientName(ingredient);
+            const normalizedIngredient = normalizeIngredientName(scaledIngredient);
             const count = ingredientCounts.get(normalizedIngredient) || 0;
             ingredientCounts.set(normalizedIngredient, count + 1);
           });
@@ -923,6 +952,7 @@
       const state = {
         currentlyDisplayedRecipes: currentlyDisplayedRecipes,
         recipeCount: document.getElementById('recipe-count').value,
+        servingSize: document.getElementById('serving-size').value,
         hideCheckedItems: hideCheckedItems,
         groceryItems: Array.from(document.querySelectorAll('.grocery-item')).map(item => ({
           text: item.querySelector('label').textContent,
@@ -941,6 +971,11 @@
           // Restore recipe count selection
           if (state.recipeCount) {
             document.getElementById('recipe-count').value = state.recipeCount;
+          }
+          
+          // Restore serving size selection
+          if (state.servingSize) {
+            document.getElementById('serving-size').value = state.servingSize;
           }
           
           // Restore hide checked items preference
