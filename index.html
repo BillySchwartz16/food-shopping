@@ -573,27 +573,44 @@
       const input = document.getElementById('new-item');
       const value = input.value.trim();
       if (value) {
-        // Check for existing items with the same base name
-        const existingLabels = Array.from(document.querySelectorAll('.grocery-item label')).map(label => label.textContent);
+        const groceryList = document.getElementById('grocery-list');
+        const existingItems = Array.from(groceryList.querySelectorAll('.grocery-item'));
         const baseName = value.toLowerCase();
         
-        // Count how many items already exist with this base name
-        let count = 0;
-        existingLabels.forEach(label => {
-          const labelLower = label.toLowerCase();
+        // Find and remove existing items with the same base name
+        let maxCount = 0;
+        const itemsToRemove = [];
+        
+        existingItems.forEach(item => {
+          const label = item.querySelector('label');
+          const labelText = label.textContent;
+          const labelLower = labelText.toLowerCase();
+          
+          // Check if this item matches the base name
           if (labelLower === baseName || labelLower.startsWith(baseName + ' (')) {
-            count++;
+            itemsToRemove.push(item);
+            
+            // Extract count from existing item
+            const match = labelText.match(/\((\d+)\)$/);
+            if (match) {
+              maxCount = Math.max(maxCount, parseInt(match[1]));
+            } else if (labelLower === baseName) {
+              maxCount = Math.max(maxCount, 1);
+            }
           }
         });
         
+        // Remove existing items
+        itemsToRemove.forEach(item => item.remove());
+        
+        // Create new item with incremented count
         const div = document.createElement('div');
         div.className = 'grocery-item';
-        
-        // If duplicates exist, add incremental number
-        const displayValue = count > 0 ? `${value} (${count + 1})` : value;
+        const newCount = maxCount + 1;
+        const displayValue = newCount > 1 ? `${value} (${newCount})` : value;
         
         div.innerHTML = `<input type="checkbox" onchange="updateGroceryStats(); saveState();"><label onclick="toggleCheckbox(this)">${displayValue}</label><button class="remove-btn" onclick="removeItem(this)">✕</button>`;
-        document.getElementById('grocery-list').appendChild(div);
+        groceryList.appendChild(div);
         input.value = '';
         updateGroceryStats();
         saveState();
