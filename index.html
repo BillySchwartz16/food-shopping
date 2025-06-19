@@ -795,6 +795,7 @@
           <h2>${recipe.title}</h2>
           <button class="toggle-btn" onclick="toggleInstructions(this)">View Instructions</button>
           <button class="swap-btn" onclick="swapRecipe(this)" style="margin-left: 1rem; background-color: #e67e22;">Swap Recipe</button>
+          <button class="youtube-btn" onclick="searchYouTube('${recipe.youtubeSearch}')" style="margin-left: 1rem; background: linear-gradient(135deg, #ff0000, #cc0000);">📺 YouTube</button>
           <div class="instructions" style="display: none;">
             <!-- Instructions will be populated by updateRecipe -->
           </div>
@@ -953,6 +954,7 @@
             <h2>${recipe.title}</h2>
             <button class="toggle-btn" onclick="toggleInstructions(this)">View Instructions</button>
             <button class="swap-btn" onclick="swapRecipe(this)" style="margin-left: 1rem; background-color: #e67e22;">Swap Recipe</button>
+            <button class="youtube-btn" onclick="searchYouTube('${recipe.youtubeSearch}')" style="margin-left: 1rem; background: linear-gradient(135deg, #ff0000, #cc0000);">📺 YouTube</button>
             <div class="instructions" style="display: none;">
               <!-- Instructions will be populated by updateRecipe -->
             </div>
@@ -969,6 +971,11 @@
         localStorage.removeItem('heartHealthyDinnersState');
         location.reload();
       }
+    }
+
+    function searchYouTube(searchQuery) {
+      const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`;
+      window.open(url, '_blank');
     }
 
     function normalizeIngredientName(ingredient) {
