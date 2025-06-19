@@ -119,66 +119,135 @@
     
     .grocery-item {
       background: white;
+      border: 1px solid #e2e8f0;
       border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
       transition: all 0.2s ease;
       touch-action: manipulation;
+      min-height: 64px;
+      position: relative;
     }
     
     .grocery-item:hover {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      border-color: #cbd5e0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-1px);
     }
     
     .grocery-item.checked {
-      opacity: 0.6;
-      background: #f0fff4;
+      background: linear-gradient(135deg, #f0fff4, #e6fffa);
+      border-color: #68d391;
+      opacity: 0.8;
     }
     
     .grocery-item.checked label {
       text-decoration: line-through;
-      color: #68d391;
+      color: #38a169;
+      opacity: 0.7;
     }
     
     .grocery-item input[type="checkbox"] {
-      transform: scale(1.5);
+      width: 20px;
+      height: 20px;
       accent-color: #48bb78;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    
+    .grocery-item label {
+      font-weight: 500;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      color: #2d3748;
+      cursor: pointer;
+      word-break: break-word;
+      user-select: none;
     }
     
     .remove-btn {
-      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      background: #e53e3e;
       color: white;
       border: none;
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
+      border-radius: 8px;
+      width: 36px;
+      height: 36px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.8rem;
-      transition: all 0.3s ease;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      opacity: 0.7;
     }
     
     .remove-btn:hover {
-      transform: scale(1.1);
-      box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+      background: #c53030;
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    
+    .remove-btn:active {
+      transform: scale(0.95);
     }
     
     .grocery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
       max-height: 60vh;
       overflow-y: auto;
+      padding: 4px;
     }
     
-    @media (max-width: 576px) {
+    .grocery-stats-badge {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
       .grocery-grid {
-        grid-template-columns: 1fr;
         max-height: 50vh;
       }
       
+      .grocery-item {
+        min-height: 72px;
+      }
+      
       .grocery-item input[type="checkbox"] {
-        transform: scale(1.8);
+        width: 22px;
+        height: 22px;
+      }
+      
+      .grocery-item label {
+        font-size: 1rem;
+      }
+      
+      .remove-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .grocery-item {
+        min-height: 80px;
+      }
+      
+      .grocery-item input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+      }
+      
+      .remove-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
       }
     }
     </style>
@@ -249,7 +318,7 @@
           </div>
           
           <div class="text-center mb-3">
-            <span id="grocery-stats" class="badge bg-secondary fs-6">0 items • 0 checked</span>
+            <span id="grocery-stats" class="grocery-stats-badge">0 items • 0 checked</span>
           </div>
           
           <div id="grocery-list" class="grocery-grid">
@@ -318,9 +387,9 @@
         const displayValue = newCount > 1 ? `${value} (${newCount})` : value;
       
         div.innerHTML = `
-          <input type="checkbox" class="form-check-input me-3" onchange="updateGroceryStats(); saveState();">
+          <input type="checkbox" class="me-3" onchange="updateGroceryStats(); saveState();">
           <label class="flex-grow-1 mb-0" onclick="toggleCheckbox(this)">${displayValue}</label>
-          <button class="remove-btn ms-2" onclick="removeItem(this)">✕</button>
+          <button class="remove-btn ms-2" onclick="removeItem(this)" aria-label="Remove ${displayValue}">×</button>
         `;
         groceryList.appendChild(div);
         input.value = '';
@@ -355,7 +424,7 @@
       // Handle hide/show logic
       if (hideCheckedItems && checkbox.checked) {
         item.style.display = 'none';
-      } else if (!hideCheckedItems) {
+      } else {
         item.style.display = 'flex';
       }
       
@@ -389,7 +458,7 @@
         // Handle hide/show logic
         if (hideCheckedItems && checkbox.checked) {
           item.style.display = 'none';
-        } else if (!hideCheckedItems) {
+        } else {
           item.style.display = 'flex';
         }
       });
@@ -664,9 +733,9 @@
                 div.classList.add('checked');
               }
               div.innerHTML = `
-                <input type="checkbox" class="form-check-input me-3" ${itemData.checked ? 'checked' : ''} onchange="updateGroceryStats(); saveState();">
+                <input type="checkbox" class="me-3" ${itemData.checked ? 'checked' : ''} onchange="updateGroceryStats(); saveState();">
                 <label class="flex-grow-1 mb-0" onclick="toggleCheckbox(this)">${itemData.text}</label>
-                <button class="remove-btn ms-2" onclick="removeItem(this)">✕</button>
+                <button class="remove-btn ms-2" onclick="removeItem(this)" aria-label="Remove ${itemData.text}">×</button>
               `;
               
               // Apply hide/show logic
@@ -993,7 +1062,7 @@
           // Handle hide/show logic
           if (hideCheckedItems && e.target.checked) {
             item.style.display = 'none';
-          } else if (!hideCheckedItems) {
+          } else {
             item.style.display = 'flex';
           }
           
