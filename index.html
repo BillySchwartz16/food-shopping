@@ -611,7 +611,7 @@
   <script src="recipes.js"></script>
   <script>
     function toggleInstructions(button) {
-      const mealDiv = button.closest('.meal');
+      const mealDiv = button.closest('.card');
       const instructionsDiv = mealDiv.querySelector('.instructions');
       if (instructionsDiv.style.display === "block") {
         instructionsDiv.style.display = "none";
@@ -963,7 +963,7 @@
     }
 
     function swapRecipe(button) {
-      const mealDiv = button.closest('.meal');
+      const mealDiv = button.closest('[data-meal-id]');
       const currentMealId = parseInt(mealDiv.dataset.mealId);
       
       // Find available recipes that aren't currently displayed
@@ -1118,7 +1118,7 @@
       const servingSize = parseInt(document.getElementById('serving-size').value);
       
       // Get all current recipes and count ingredients
-      const meals = document.querySelectorAll('.meal');
+      const meals = document.querySelectorAll('[data-meal-id]');
       meals.forEach(meal => {
         const mealId = parseInt(meal.dataset.mealId);
         const recipe = recipes[mealId];
@@ -1320,7 +1320,7 @@
 
     function updateServingSizes() {
       // Update all currently displayed recipes with new serving sizes
-      const meals = document.querySelectorAll('.meal');
+      const meals = document.querySelectorAll('[data-meal-id]');
       meals.forEach(meal => {
         const mealId = parseInt(meal.dataset.mealId);
         const recipe = recipes.find(r => r.id === mealId);
@@ -1349,7 +1349,7 @@
       const selectedRecipeId = parseInt(selectElement.value);
       if (!selectedRecipeId) return;
       
-      const mealDiv = selectElement.closest('.meal');
+      const mealDiv = selectElement.closest('[data-meal-id]');
       const currentMealId = parseInt(mealDiv.dataset.mealId);
       const newRecipe = recipes.find(r => r.id === selectedRecipeId);
       
@@ -1373,9 +1373,10 @@
     }
 
     function updateAllDropdowns() {
-      const dropdowns = document.querySelectorAll('.recipe-swap-dropdown');
+      const dropdowns = document.querySelectorAll('.form-select');
       dropdowns.forEach(dropdown => {
-        const mealDiv = dropdown.closest('.meal');
+        const mealDiv = dropdown.closest('[data-meal-id]');
+        if (!mealDiv) return;
         const currentRecipeId = parseInt(mealDiv.dataset.mealId);
         const availableRecipes = getAvailableRecipesForDropdown(currentRecipeId);
         
