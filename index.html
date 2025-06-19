@@ -529,6 +529,7 @@
       <button id="clear-checked" onclick="clearCheckedItems()">Clear Checked</button>
       <button id="toggle-all" onclick="toggleAllItems()">Check All</button>
       <button id="hide-checked" onclick="toggleHideChecked()">Hide Checked</button>
+      <button onclick="clearAllData()" style="background: linear-gradient(135deg, #e53e3e, #c53030); font-size: 0.8rem;">Clear All Data</button>
     </div>
     <div class="sort-controls" style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; justify-content: center;">
       <button onclick="sortGroceryList('produce')" style="background: linear-gradient(135deg, #48bb78, #38a169); font-size: 0.8rem; padding: 0.4rem 0.8rem;">🥬 Produce</button>
@@ -591,10 +592,11 @@
         // If duplicates exist, add incremental number
         const displayValue = count > 0 ? `${value} (${count + 1})` : value;
         
-        div.innerHTML = `<input type="checkbox" onchange="updateGroceryStats()"><label onclick="toggleCheckbox(this)">${displayValue}</label><button class="remove-btn" onclick="removeItem(this)">✕</button>`;
+        div.innerHTML = `<input type="checkbox" onchange="updateGroceryStats(); saveState();"><label onclick="toggleCheckbox(this)">${displayValue}</label><button class="remove-btn" onclick="removeItem(this)">✕</button>`;
         document.getElementById('grocery-list').appendChild(div);
         input.value = '';
         updateGroceryStats();
+        saveState();
       }
     }
 
@@ -605,6 +607,7 @@
       setTimeout(() => {
         item.remove();
         updateGroceryStats();
+        saveState();
       }, 300);
     }
 
@@ -628,6 +631,7 @@
       }
       
       updateGroceryStats();
+      saveState();
     }
 
     function clearCheckedItems() {
@@ -638,7 +642,10 @@
         item.style.opacity = '0';
         setTimeout(() => item.remove(), 300);
       });
-      setTimeout(updateGroceryStats, 350);
+      setTimeout(() => {
+        updateGroceryStats();
+        saveState();
+      }, 350);
     }
 
     function toggleAllItems() {
@@ -647,9 +654,18 @@
       
       checkboxes.forEach(checkbox => {
         checkbox.checked = !allChecked;
-        checkbox.parentElement.classList.toggle('checked', checkbox.checked);
+        const item = checkbox.parentElement;
+        item.classList.toggle('checked', checkbox.checked);
+        
+        // Handle hide/show logic
+        if (hideCheckedItems && checkbox.checked) {
+          item.style.display = 'none';
+        } else if (!hideCheckedItems) {
+          item.style.display = 'flex';
+        }
       });
       updateGroceryStats();
+      saveState();
     }
 
     function updateGroceryStats() {
@@ -692,6 +708,7 @@
       mealDiv.dataset.mealId = newRecipe.id;
       updateRecipe(mealDiv, newRecipe);
       updateShoppingList();
+      saveState();
     }
 
     function updateRecipe(mealDiv, recipe) {
@@ -784,6 +801,7 @@
     function updateRecipeDisplay() {
       loadRecipes();
       updateShoppingList();
+      saveState();
     }
 
     function updateShoppingList() {
@@ -825,6 +843,117 @@
 
     let hideCheckedItems = false;
 
+    // State management functions
+    function saveState() {
+      const state = {
+        currentlyDisplayedRecipes: currentlyDisplayedRecipes,
+        recipeCount: document.getElementById('recipe-count').value,
+        hideCheckedItems: hideCheckedItems,
+        groceryItems: Array.from(document.querySelectorAll('.grocery-item')).map(item => ({
+          text: item.querySelector('label').textContent,
+          checked: item.querySelector('input[type="checkbox"]').checked
+        }))
+      };
+      localStorage.setItem('heartHealthyDinnersState', JSON.stringify(state));
+    }
+
+    function loadState() {
+      try {
+        const savedState = localStorage.getItem('heartHealthyDinnersState');
+        if (savedState) {
+          const state = JSON.parse(savedState);
+          
+          // Restore recipe count selection
+          if (state.recipeCount) {
+            document.getElementById('recipe-count').value = state.recipeCount;
+          }
+          
+          // Restore hide checked items preference
+          if (state.hideCheckedItems) {
+            hideCheckedItems = state.hideCheckedItems;
+            const button = document.getElementById('hide-checked');
+            if (hideCheckedItems) {
+              button.textContent = 'Show Checked';
+            }
+          }
+          
+          // Restore displayed recipes if they exist
+          if (state.currentlyDisplayedRecipes && state.currentlyDisplayedRecipes.length > 0) {
+            currentlyDisplayedRecipes = state.currentlyDisplayedRecipes;
+            loadSpecificRecipes(currentlyDisplayedRecipes);
+          } else {
+            loadRecipes();
+          }
+          
+          // Restore grocery items
+          if (state.groceryItems && state.groceryItems.length > 0) {
+            const groceryList = document.getElementById('grocery-list');
+            // Clear auto-generated items first
+            const existingItems = groceryList.querySelectorAll('.grocery-item');
+            existingItems.forEach(item => item.remove());
+            
+            // Add saved items
+            state.groceryItems.forEach(itemData => {
+              const div = document.createElement('div');
+              div.className = 'grocery-item';
+              if (itemData.checked) {
+                div.classList.add('checked');
+              }
+              div.innerHTML = `<input type="checkbox" ${itemData.checked ? 'checked' : ''} onchange="updateGroceryStats(); saveState();"><label onclick="toggleCheckbox(this)">${itemData.text}</label><button class="remove-btn" onclick="removeItem(this)">✕</button>`;
+              
+              // Apply hide/show logic
+              if (hideCheckedItems && itemData.checked) {
+                div.style.display = 'none';
+              }
+              
+              groceryList.appendChild(div);
+            });
+          } else {
+            updateShoppingList();
+          }
+          
+          updateGroceryStats();
+          return true;
+        }
+      } catch (error) {
+        console.error('Error loading saved state:', error);
+      }
+      return false;
+    }
+
+    function loadSpecificRecipes(recipeIds) {
+      const mealsContainer = document.getElementById('meals-container');
+      mealsContainer.innerHTML = '';
+      
+      recipeIds.forEach(recipeId => {
+        const recipe = recipes.find(r => r.id === recipeId);
+        if (recipe) {
+          const mealDiv = document.createElement('div');
+          mealDiv.className = 'meal';
+          mealDiv.dataset.mealId = recipe.id;
+          
+          mealDiv.innerHTML = `
+            <h2>${recipe.title}</h2>
+            <button class="toggle-btn" onclick="toggleInstructions(this)">View Instructions</button>
+            <button class="swap-btn" onclick="swapRecipe(this)" style="margin-left: 1rem; background-color: #e67e22;">Swap Recipe</button>
+            <div class="instructions" style="display: none;">
+              <!-- Instructions will be populated by updateRecipe -->
+            </div>
+          `;
+          
+          mealsContainer.appendChild(mealDiv);
+          updateRecipe(mealDiv, recipe);
+        }
+      });
+    }
+
+    function clearAllData() {
+      if (confirm('This will clear all your saved recipes and grocery list. Are you sure?')) {
+        localStorage.removeItem('heartHealthyDinnersState');
+        location.reload();
+      }
+    }
+
     function normalizeIngredientName(ingredient) {
       // Remove common quantity indicators and normalize for grouping
       const normalized = ingredient
@@ -855,6 +984,7 @@
           item.style.display = 'flex';
         });
       }
+      saveState();
     }
 
     function categorizeIngredient(ingredient) {
@@ -953,8 +1083,14 @@
 
     // Load recipes when page loads
     window.addEventListener('load', () => {
-      loadRecipes();
-      updateShoppingList();
+      // Try to load saved state first
+      const stateLoaded = loadState();
+      
+      // If no saved state, load default recipes
+      if (!stateLoaded) {
+        loadRecipes();
+        updateShoppingList();
+      }
       
       // Add event listeners for checkbox changes
       document.addEventListener('change', (e) => {
@@ -968,6 +1104,8 @@
           } else if (!hideCheckedItems) {
             item.style.display = 'flex';
           }
+          
+          saveState();
         }
       });
     });
