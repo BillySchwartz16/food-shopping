@@ -264,24 +264,114 @@
       box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
     }
     
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       body {
-        padding: 1rem;
+        padding: 0.5rem;
       }
-      input[type="text"] {
+      
+      .container {
+        padding: 1rem;
+        border-radius: 12px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+      
+      h2 {
+        font-size: 1.3rem;
+      }
+      
+      .meal, .grocery {
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+      
+      .toggle-btn, .swap-btn {
+        display: block;
+        width: 100%;
+        margin: 0.5rem 0;
+        padding: 0.8rem;
+        font-size: 1rem;
+      }
+      
+      .swap-btn {
+        margin-top: 0.5rem;
+      }
+      
+      input[type="text"], input[type="password"] {
         width: 100%;
         margin-bottom: 0.5rem;
+        font-size: 16px; /* Prevents zoom on iOS */
       }
+      
       button {
         width: 100%;
-        margin-top: 0.3rem;
+        margin-top: 0.5rem;
+        padding: 1rem;
+        font-size: 1rem;
       }
-      li {
+      
+      .grocery-item {
+        padding: 1rem;
+        flex-wrap: wrap;
+      }
+      
+      .grocery-item label {
+        margin-bottom: 0.5rem;
+        word-break: break-word;
+      }
+      
+      .remove-btn {
+        margin: 0.5rem 0 0 0;
+        align-self: flex-end;
+      }
+      
+      .instructions {
+        padding: 1rem;
+      }
+      
+      .instructions li {
+        margin-bottom: 1rem;
+        line-height: 1.5;
+      }
+      
+      .api-config {
+        padding: 1rem;
+      }
+      
+      .api-config input {
+        margin-bottom: 1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .container {
+        padding: 0.75rem;
+      }
+      
+      .meal, .grocery {
+        padding: 0.75rem;
+      }
+      
+      .grocery-item {
         flex-direction: column;
         align-items: flex-start;
+        gap: 0.5rem;
       }
+      
+      .grocery-item input[type="checkbox"] {
+        margin-right: 0.5rem;
+      }
+      
       .remove-btn {
-        margin: 0.3rem 0 0 0;
+        align-self: flex-start;
+        margin: 0;
       }
     }
     </style>
@@ -371,35 +461,35 @@
   <h2>🛒 Grocery List</h2>
   
 <div class="grocery">
-  <ul id="grocery-list">
-    <li><label><input type="checkbox"> Skinless chicken breasts</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Lemons</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Garlic</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Fresh herbs</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Quinoa</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Broccoli</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Red and yellow bell peppers</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Ground turkey</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Brown rice</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Diced tomatoes</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Reduced-fat cheese</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Lentils</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Sweet potatoes</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Carrots</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Celery</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Whole grain bread</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Whole wheat pasta</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Spinach</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Mushrooms</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Cherry tomatoes</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Avocados</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Chickpeas</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Whole grain tortillas</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Red cabbage</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Cumin, chili powder, smoked paprika</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Olive oil</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-    <li><label><input type="checkbox"> Lime</label><button class="remove-btn" onclick="removeItem(this)">✕</button></li>
-  </ul>
+  <div id="grocery-list" class="grocery-list">
+    <div class="grocery-item"><input type="checkbox"><label>Skinless chicken breasts</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Lemons</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Garlic</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Fresh herbs</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Quinoa</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Broccoli</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Red and yellow bell peppers</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Ground turkey</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Brown rice</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Diced tomatoes</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Reduced-fat cheese</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Lentils</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Sweet potatoes</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Carrots</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Celery</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Whole grain bread</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Whole wheat pasta</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Spinach</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Mushrooms</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Cherry tomatoes</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Avocados</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Chickpeas</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Whole grain tortillas</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Red cabbage</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Cumin, chili powder, smoked paprika</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Olive oil</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+    <div class="grocery-item"><input type="checkbox"><label>Lime</label><button class="remove-btn" onclick="removeItem(this)">✕</button></div>
+  </div>
   <div>
     <input type="text" id="new-item" placeholder="Add grocery item...">
     <button onclick="addItem()">Add</button>
@@ -417,16 +507,19 @@
       const input = document.getElementById('new-item');
       const value = input.value.trim();
       if (value) {
-        const li = document.createElement('li');
-        li.innerHTML = `<label><input type="checkbox"> ${value}</label><button class="remove-btn" onclick="removeItem(this)">✕</button>`;
-        document.getElementById('grocery-list').appendChild(li);
+        const div = document.createElement('div');
+        div.className = 'grocery-item';
+        div.innerHTML = `<input type="checkbox"><label>${value}</label><button class="remove-btn" onclick="removeItem(this)">✕</button>`;
+        document.getElementById('grocery-list').appendChild(div);
         input.value = '';
       }
     }
 
     function removeItem(button) {
-      const li = button.parentElement;
-      li.remove();
+      const item = button.parentElement;
+      item.style.transform = 'translateX(100%)';
+      item.style.opacity = '0';
+      setTimeout(() => item.remove(), 300);
     }
 
     // Claude API integration
