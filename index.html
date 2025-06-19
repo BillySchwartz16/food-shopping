@@ -509,6 +509,15 @@
     <h1>💚 Heart-Healthy Dinners</h1>
     <p style="text-align: center; color: #718096; font-size: 1.1rem; margin-bottom: 2rem;">Delicious, nutritious meals without fish or onions</p>
 
+    <div class="recipe-controls" style="text-align: center; margin-bottom: 2rem;">
+      <label for="recipe-count" style="font-weight: 500; color: #4a5568; margin-right: 1rem;">Show recipes:</label>
+      <select id="recipe-count" onchange="updateRecipeDisplay()" style="padding: 0.5rem 1rem; border: 2px solid #e2e8f0; border-radius: 8px; background: white; font-size: 1rem; cursor: pointer;">
+        <option value="3">3 recipes</option>
+        <option value="5" selected>5 recipes</option>
+        <option value="7">7 recipes</option>
+        <option value="10">All recipes</option>
+      </select>
+    </div>
 
   <div id="meals-container">
     <!-- Meals will be loaded here by JavaScript -->
@@ -623,14 +632,9 @@
       const mealDiv = button.closest('.meal');
       const currentMealId = parseInt(mealDiv.dataset.mealId);
       
-      // Get all currently displayed recipe IDs
-      const currentRecipeIds = Array.from(document.querySelectorAll('.meal')).map(meal => 
-        parseInt(meal.dataset.mealId)
-      );
-      
       // Find available recipes that aren't currently displayed
       const availableRecipes = recipes.filter(recipe => 
-        !currentRecipeIds.includes(recipe.id) || recipe.id === currentMealId
+        !currentlyDisplayedRecipes.includes(recipe.id) || recipe.id === currentMealId
       );
       
       // If we only have the current recipe available, don't swap
@@ -643,6 +647,12 @@
       const availableIds = availableRecipes.filter(recipe => recipe.id !== currentMealId);
       const randomIndex = Math.floor(Math.random() * availableIds.length);
       const newRecipe = availableIds[randomIndex];
+      
+      // Update the currently displayed recipes array
+      const currentIndex = currentlyDisplayedRecipes.indexOf(currentMealId);
+      if (currentIndex !== -1) {
+        currentlyDisplayedRecipes[currentIndex] = newRecipe.id;
+      }
       
       // Update the meal div with new recipe
       mealDiv.dataset.mealId = newRecipe.id;
@@ -695,10 +705,20 @@
       `;
     }
 
+    let currentlyDisplayedRecipes = [];
+
     function loadRecipes() {
+      const recipeCount = parseInt(document.getElementById('recipe-count').value);
       const mealsContainer = document.getElementById('meals-container');
       
-      recipes.forEach(recipe => {
+      // Clear existing meals
+      mealsContainer.innerHTML = '';
+      currentlyDisplayedRecipes = [];
+      
+      // Get random recipes to display
+      const recipesToShow = getRandomRecipes(recipeCount);
+      
+      recipesToShow.forEach(recipe => {
         const mealDiv = document.createElement('div');
         mealDiv.className = 'meal';
         mealDiv.dataset.mealId = recipe.id;
@@ -714,7 +734,22 @@
         
         mealsContainer.appendChild(mealDiv);
         updateRecipe(mealDiv, recipe);
+        currentlyDisplayedRecipes.push(recipe.id);
       });
+    }
+
+    function getRandomRecipes(count) {
+      if (count >= recipes.length) {
+        return [...recipes];
+      }
+      
+      const shuffled = [...recipes].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count);
+    }
+
+    function updateRecipeDisplay() {
+      loadRecipes();
+      updateShoppingList();
     }
 
     function updateShoppingList() {
